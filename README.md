@@ -4,10 +4,10 @@ The marketing site: hero, the route-matching differentiator, trust & safety, for
 campus/office launch pitch, FAQ. Plain HTML, CSS and JS in `public/`, with no build step — mirrors
 the cashbook project's `apps/website`.
 
-Not deployed anywhere yet. Open `public/index.html` directly, or serve it locally:
+Open `public/index.html` directly, or serve it locally:
 
 ```bash
-cd public && python -m http.server 8095 --bind 127.0.0.1
+cd public && python -m http.server 8096 --bind 127.0.0.1
 ```
 
 ## Settings
@@ -41,12 +41,14 @@ Saves to `public/assets/screens/*.png`.
 
 ## Deployment
 
-Not decided yet. The site is plain static files, so it can go almost anywhere with no build step:
+Render's free static-site tier, same pattern as cashbook's `hisaab-book-website` — see
+[`render.yaml`](render.yaml). To stand it up:
 
-- **Alongside the existing EC2 box** (`backend/deploy/ec2/`) as a static folder served by the
-  nginx already in front of the API, at the bare domain, with the API staying on `/api/v1`.
-- **A separate static host** (Render free tier, like cashbook's `hisaab-book-website`; Cloudflare
-  Pages; Netlify) — zero server maintenance, but a new account/service to manage.
+1. Push this repo to GitHub.
+2. In Render, **New > Blueprint**, point it at the repo. It reads `render.yaml` and creates
+   `saath-sawari-website` with no further setup — no build step, `public/` served as-is.
+3. Render gives it a `*.onrender.com` URL immediately; a custom domain can be added to that
+   service later from the Render dashboard.
 
-Whichever is chosen, moving to a real domain only touches `public/config.js` (store URLs, support
-email) — the page itself has no hosting-specific code.
+Moving to a real domain only touches `public/config.js` (store URLs, support email) — the page
+itself has no hosting-specific code.

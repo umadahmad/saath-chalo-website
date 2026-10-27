@@ -1,0 +1,14 @@
+# The marketing website: plain static files, on Render's CDN (free, never
+# sleeps). Hosting-dependent links (store URLs, support email) are set in
+# public/config.js, not here.
+services:
+  - type: web
+    name: saath-sawari-website
+    runtime: static
+    branch: main
+    buildCommand: echo "No build step"
+    staticPublishPath: public
+    headers:
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
