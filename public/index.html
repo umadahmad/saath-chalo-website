@@ -1,0 +1,535 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Saath Sawari — Islamabad carpooling</title>
+<link rel="icon" type="image/png" href="favicon.png">
+<meta name="description" content="Islamabad carpooling that matches you with drivers already on your exact road.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  /*
+    Saath Sawari marketing site — single light theme by deliberate choice
+    (standing preference): no dark-mode variant.
+
+    Plain HTML, CSS and JS, no build step (see README.md) — mirrors the
+    cashbook project's apps/website. Layout: a vertical story told in
+    alternating-tint sections (white / pine-tint / cream), each opening on
+    a thesis line, with phone-mockup screenshots as the recurring proof
+    device. One typeface family (Barlow, the app's own) for full brand
+    continuity between the app and this page; IBM Plex Mono for small
+    data-ish labels (route names, stats).
+  */
+  :root {
+    color-scheme: light;
+    --pine600: #0A7B5C;
+    --pine700: #075E46;
+    --pine800: #054A36;
+    --pine50:  #ECF7F2;
+    --pine100: #D5EFE3;
+    --brand-end: #12A07A;
+    --cream: #FBF3E7;
+    --cream-line: #EFE2CE;
+    --ink900: #14212B;
+    --ink700: #3B4A55;
+    --ink500: #586874;
+    --canvas: #F6F8F7;
+    --surface: #FFFFFF;
+    --line200: #DDE4E0;
+    --amber: #9A5B00;
+    --amber-bg: #FFF4DF;
+    --blue: #1E5BD8;
+    --blue-bg: #EAF0FD;
+    --rose: #B23366;
+    --rose-bg: #FCEAF1;
+    --font-display: 'Barlow', -apple-system, sans-serif;
+    --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--canvas);
+    color: var(--ink900);
+    font-family: var(--font-display);
+    -webkit-font-smoothing: antialiased;
+  }
+  img { max-width: 100%; display: block; }
+  h1, h2, h3 { text-wrap: balance; margin: 0; }
+  p { margin: 0; }
+  a { color: inherit; }
+  [hidden] { display: none !important; }
+
+  .wrap { max-width: 1120px; margin: 0 auto; padding-inline: 24px; }
+  @media (max-width: 640px) { .wrap { padding-inline: 18px; } }
+
+  /* ---------- Nav ---------- */
+  .nav {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(246, 248, 247, 0.88);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line200);
+  }
+  .nav-row { display: flex; align-items: center; justify-content: space-between; padding-block: 14px; }
+  .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+  .brand-mark {
+    width: 34px; height: 34px; border-radius: 10px; background: var(--pine600);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .brand-mark svg { width: 20px; height: 20px; }
+  .brand-name { font-weight: 800; font-size: 17px; color: var(--ink900); }
+  .nav-links { display: flex; gap: 28px; align-items: center; }
+  .nav-links a { text-decoration: none; color: var(--ink700); font-weight: 600; font-size: 14.5px; }
+  .nav-links a:hover { color: var(--pine700); }
+  @media (max-width: 760px) { .nav-links { display: none; } }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: var(--font-display); font-weight: 700; font-size: 14.5px;
+    padding: 11px 20px; border-radius: 999px; text-decoration: none;
+    border: 1.5px solid transparent; cursor: pointer;
+  }
+  .btn-primary { background: var(--pine600); color: #fff; }
+  .btn-primary:hover { background: var(--pine700); }
+  .btn-ghost { border-color: var(--line200); color: var(--ink900); background: transparent; }
+  .btn-ghost:hover { border-color: var(--pine600); color: var(--pine700); }
+
+  /* ---------- Hero ---------- */
+  .hero { background: linear-gradient(150deg, var(--pine700) 0%, var(--pine600) 46%, var(--brand-end) 100%); color: #fff; position: relative; overflow: hidden; }
+  .hero-inner { display: grid; grid-template-columns: 1.05fr 0.85fr; gap: 48px; align-items: center; padding-block: 72px 0; }
+  @media (max-width: 860px) { .hero-inner { grid-template-columns: 1fr; padding-block: 44px 0; text-align: left; } }
+  .eyebrow {
+    font-family: var(--font-mono); font-size: 12.5px; font-weight: 600;
+    letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.85);
+    margin-bottom: 18px; display: flex; align-items: center; gap: 10px;
+  }
+  .eyebrow::before { content: ''; width: 20px; height: 2px; background: rgba(255,255,255,0.6); }
+  .hero h1 { font-size: 50px; line-height: 1.08; font-weight: 800; letter-spacing: -0.015em; }
+  @media (max-width: 640px) { .hero h1 { font-size: 36px; } }
+  .hero-sub { margin-top: 22px; font-size: 18px; line-height: 1.55; color: rgba(255,255,255,0.92); max-width: 48ch; }
+  .hero-ctas { display: flex; gap: 14px; margin-top: 32px; flex-wrap: wrap; }
+  .hero .btn-ghost { border-color: rgba(255,255,255,0.4); color: #fff; }
+  .hero .btn-ghost:hover { border-color: #fff; background: rgba(255,255,255,0.08); }
+  .hero .btn-primary { background: #fff; color: var(--pine700); }
+  .hero .btn-primary:hover { background: var(--cream); }
+
+  .hero-stats { display: flex; gap: 28px; margin-top: 40px; padding-top: 28px; border-top: 1px solid rgba(255,255,255,0.22); flex-wrap: wrap; }
+  .stat-num { font-family: var(--font-mono); font-weight: 600; font-size: 24px; color: #fff; font-variant-numeric: tabular-nums; }
+  .stat-label { font-size: 12.5px; color: rgba(255,255,255,0.78); margin-top: 2px; }
+
+  /* ---------- Phone mockup ---------- */
+  .phone { width: 100%; max-width: 300px; margin-inline: auto; border-radius: 34px; background: #0d1a16; padding: 10px; box-shadow: 0 30px 60px -20px rgba(5, 30, 22, 0.55); }
+  .phone-screen { border-radius: 25px; overflow: hidden; aspect-ratio: 412 / 850; background: var(--canvas); position: relative; }
+  .phone-screen img { width: 100%; height: 100%; object-fit: cover; object-position: top center; }
+
+  /* ---------- Hero phone stack (3 overlapping screens) ---------- */
+  .phone-stack { position: relative; max-width: 360px; margin-inline: auto; padding-block: 36px 56px; }
+  .phone-stack .phone { position: relative; max-width: 220px; z-index: 2; }
+  .phone-stack .phone-side { position: absolute; top: 30px; max-width: 180px; z-index: 1; opacity: 0.92; filter: brightness(0.92); }
+  .phone-stack .phone-side.left { left: -46px; transform: rotate(-9deg); }
+  .phone-stack .phone-side.right { right: -46px; transform: rotate(9deg); }
+  @media (max-width: 860px) {
+    .phone-stack { max-width: 300px; padding-block: 20px 40px; }
+    .phone-stack .phone { max-width: 190px; }
+    .phone-stack .phone-side { max-width: 150px; }
+    .phone-stack .phone-side.left { left: -30px; }
+    .phone-stack .phone-side.right { right: -30px; }
+  }
+
+  /* ---------- Store badges ---------- */
+  .store-badges { display: flex; gap: 12px; margin-top: 18px; flex-wrap: wrap; }
+  .store-badge {
+    display: inline-flex; align-items: center; gap: 10px;
+    border: 1.5px solid rgba(255,255,255,0.3); border-radius: 12px;
+    padding: 9px 16px; cursor: default; user-select: none; text-decoration: none;
+  }
+  a.store-badge { cursor: pointer; }
+  a.store-badge:hover { border-color: #fff; background: rgba(255,255,255,0.08); }
+  .store-badge svg { width: 22px; height: 22px; flex-shrink: 0; }
+  .store-badge .store-text { line-height: 1.25; }
+  .store-badge .store-sub { font-size: 10px; letter-spacing: 0.04em; text-transform: uppercase; color: rgba(255,255,255,0.65); }
+  .store-badge .store-name { font-size: 14.5px; font-weight: 700; color: #fff; }
+
+  /* ---------- Sections ---------- */
+  section { padding-block: 88px; }
+  @media (max-width: 640px) { section { padding-block: 56px; } }
+  .section-tint { background: var(--pine50); }
+  .section-cream { background: var(--cream); }
+
+  .section-head { max-width: 640px; margin-bottom: 52px; }
+  .section-eyebrow { font-family: var(--font-mono); font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--pine700); margin-bottom: 14px; }
+  .section-head h2 { font-size: 34px; font-weight: 800; line-height: 1.18; }
+  @media (max-width: 640px) { .section-head h2 { font-size: 27px; } }
+  .section-head p { margin-top: 14px; font-size: 16.5px; line-height: 1.6; color: var(--ink700); }
+
+  /* ---------- Differentiator (split) ---------- */
+  .split { display: grid; grid-template-columns: 0.95fr 1.05fr; gap: 56px; align-items: center; }
+  @media (max-width: 860px) { .split { grid-template-columns: 1fr; } }
+  .split.reverse .split-media { order: -1; }
+  @media (max-width: 860px) { .split.reverse .split-media { order: 0; } }
+
+  .route-compare { background: var(--surface); border: 1px solid var(--line200); border-radius: 20px; padding: 22px; margin-top: 28px; }
+  .route-compare .row { display: flex; gap: 14px; padding-block: 12px; align-items: flex-start; }
+  .route-compare .row + .row { border-top: 1px dashed var(--line200); }
+  .route-compare .tag { flex-shrink: 0; width: 86px; font-family: var(--font-mono); font-size: 11px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; padding-top: 2px; }
+  .route-compare .tag.no { color: var(--ink500); }
+  .route-compare .tag.yes { color: var(--pine700); }
+  .route-compare .txt { font-size: 15px; line-height: 1.5; color: var(--ink700); }
+  .route-compare .txt b { color: var(--ink900); }
+
+  /* ---------- How it works ---------- */
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+  @media (max-width: 760px) { .steps { grid-template-columns: 1fr; } }
+  .step-num { font-family: var(--font-mono); font-size: 13px; font-weight: 600; color: var(--pine700); background: var(--pine100); width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 18px; }
+  .step h3 { font-size: 19px; font-weight: 700; margin-bottom: 8px; }
+  .step p { font-size: 15px; line-height: 1.6; color: var(--ink700); }
+
+  /* ---------- Screenshot gallery ---------- */
+  .gallery-row { display: flex; gap: 20px; overflow-x: auto; padding-bottom: 12px; margin: 0 -24px; padding-inline: 24px; scroll-snap-type: x proximity; }
+  @media (max-width: 640px) { .gallery-row { margin: 0 -18px; padding-inline: 18px; } }
+  .gallery-item { flex-shrink: 0; width: 196px; scroll-snap-align: start; }
+  .gallery-item .phone { max-width: 196px; border-radius: 26px; padding: 8px; box-shadow: 0 18px 36px -16px rgba(5, 30, 22, 0.28); }
+  .gallery-item .phone-screen { border-radius: 19px; }
+  .gallery-caption { margin-top: 14px; font-size: 13.5px; font-weight: 700; color: var(--ink900); text-align: center; }
+
+  /* ---------- Trust grid ---------- */
+  .trust-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+  @media (max-width: 640px) { .trust-grid { grid-template-columns: 1fr; } }
+  .trust-card { background: var(--surface); border: 1px solid var(--line200); border-radius: 18px; padding: 26px; }
+  .trust-icon { width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px; font-size: 20px; }
+  .trust-card h3 { font-size: 17px; font-weight: 700; margin-bottom: 6px; }
+  .trust-card p { font-size: 14.5px; line-height: 1.55; color: var(--ink700); }
+
+  /* ---------- For drivers ---------- */
+  .driver-points { display: grid; gap: 16px; margin-top: 28px; }
+  .driver-point { display: flex; gap: 14px; align-items: flex-start; }
+  .driver-point .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--pine600); margin-top: 8px; flex-shrink: 0; }
+  .driver-point p { font-size: 15.5px; line-height: 1.55; color: var(--ink700); }
+  .driver-point b { color: var(--ink900); }
+
+  /* ---------- Launch / campus ---------- */
+  .launch { background: var(--ink900); color: #fff; border-radius: 28px; padding: 56px 48px; display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 40px; align-items: center; }
+  @media (max-width: 760px) { .launch { grid-template-columns: 1fr; padding: 36px 26px; } }
+  .launch h2 { font-size: 30px; font-weight: 800; line-height: 1.2; color: #fff; }
+  .launch p { margin-top: 16px; font-size: 15.5px; line-height: 1.6; color: rgba(255,255,255,0.78); }
+  .launch-cta { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.14); border-radius: 18px; padding: 24px; }
+  .launch-cta .label { font-family: var(--font-mono); font-size: 11.5px; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.6); margin-bottom: 10px; }
+  .launch-cta .email { font-family: var(--font-mono); font-size: 17px; font-weight: 600; color: #fff; word-break: break-all; }
+  .launch-cta .btn-primary { margin-top: 16px; width: 100%; justify-content: center; }
+
+  /* ---------- FAQ ---------- */
+  .faq { display: grid; gap: 1px; background: var(--line200); border: 1px solid var(--line200); border-radius: 16px; overflow: hidden; }
+  .faq-item { background: var(--surface); padding: 22px 24px; }
+  .faq-item h3 { font-size: 15.5px; font-weight: 700; margin-bottom: 8px; }
+  .faq-item p { font-size: 14.5px; line-height: 1.6; color: var(--ink700); }
+
+  /* ---------- Footer ---------- */
+  footer { background: var(--pine800); color: rgba(255,255,255,0.75); padding-block: 48px; }
+  .foot-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; }
+  .foot-links { display: flex; gap: 22px; flex-wrap: wrap; }
+  .foot-links span, .foot-links a { font-size: 13.5px; color: rgba(255,255,255,0.55); text-decoration: none; }
+  .foot-links a:hover { color: #fff; }
+  .foot-fine { margin-top: 26px; font-size: 12.5px; color: rgba(255,255,255,0.45); line-height: 1.6; }
+</style>
+</head>
+<body>
+
+<svg hidden>
+  <symbol id="brand-icon" viewBox="0 0 1024 1024">
+    <path d="M 288,560 C 395,563 508,521 574,433 C 606,390 625,345 636,292 L 687,292 C 670,393 637,472 590,529 C 515,620 402,647 288,628 Z" fill="#D5EFE3"/>
+    <circle cx="288" cy="560" r="68" fill="#D5EFE3"/>
+    <path d="M 405,742 C 520,707 611,639 640,550 C 652,514 654,474 654,432 L 654,280 L 606,280 L 670,198 L 734,280 L 700,280 L 700,432 C 700,489 697,537 679,584 C 641,684 553,760 453,795 Z" fill="#FFFFFF"/>
+    <path d="M 511,737 C 539,721 563,702 584,679" fill="none" stroke="#0A7B5C" stroke-width="17" stroke-linecap="round"/>
+    <path d="M 604,653 C 624,627 639,600 649,571" fill="none" stroke="#0A7B5C" stroke-width="17" stroke-linecap="round"/>
+    <path d="M 660,535 C 667,505 669,478 669,450" fill="none" stroke="#0A7B5C" stroke-width="17" stroke-linecap="round"/>
+    <path d="M 670,407 L 670,378" fill="none" stroke="#0A7B5C" stroke-width="17" stroke-linecap="round"/>
+    <circle cx="405" cy="742" r="68" fill="#FFFFFF"/>
+  </symbol>
+</svg>
+
+<nav class="nav">
+  <div class="wrap nav-row">
+    <a class="brand" href="#top">
+      <span class="brand-mark"><svg><use href="#brand-icon"/></svg></span>
+      <span class="brand-name">Saath Sawari</span>
+    </a>
+    <div class="nav-links">
+      <a href="#how">How it works</a>
+      <a href="#drivers">For drivers</a>
+      <a href="#trust">Trust &amp; safety</a>
+      <a href="#launch">Bring it to your office</a>
+    </div>
+    <a class="btn btn-primary" href="#launch">Get in touch</a>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="wrap hero-inner">
+    <div>
+      <div class="eyebrow">Islamabad carpooling</div>
+      <h1>Same route?<br>Share the ride, save the fuel, save the cost.</h1>
+      <p class="hero-sub">
+        Driving I&#8209;11 to Blue Area every morning? Saath Sawari finds riders
+        already on your exact road &mdash; not just "nearby" &mdash; and lets you
+        split the fuel in cash, no wallet, no surge pricing.
+      </p>
+      <div class="hero-ctas">
+        <a class="btn btn-primary" href="#launch">Bring it to your office or campus</a>
+        <a class="btn btn-ghost" href="#how">See how it works</a>
+      </div>
+      <div class="store-badges" id="store-badges"></div>
+      <div class="hero-stats">
+        <div><div class="stat-num">100%</div><div class="stat-label">CNIC-verified drivers</div></div>
+        <div><div class="stat-num">PKR</div><div class="stat-label">Cash contribution, no wallet</div></div>
+        <div><div class="stat-num">Live</div><div class="stat-label">Trip sharing, every ride</div></div>
+      </div>
+    </div>
+    <div class="phone-stack">
+      <div class="phone phone-side left">
+        <div class="phone-screen"><img src="assets/screens/route-map.png" alt="Search results showing three candidate rides as colour-coded routes on a map"></div>
+      </div>
+      <div class="phone phone-side right">
+        <div class="phone-screen"><img src="assets/screens/post-ride.png" alt="Post-a-ride screen showing a real route choice"></div>
+      </div>
+      <div class="phone">
+        <div class="phone-screen"><img src="assets/screens/ride-detail.png" alt="A ride detail screen with CNIC-verified and Star driver badges"></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section id="differentiator">
+  <div class="wrap split">
+    <div>
+      <div class="section-eyebrow">The difference</div>
+      <h2>Not nearby. On your road.</h2>
+      <p style="margin-top:14px; font-size:16.5px; line-height:1.6; color:var(--ink700);">
+        Most carpool apps match on distance from a pin. Saath Sawari matches on
+        the actual road a driver already drives &mdash; so a rider going I&#8209;9
+        to Blue Area shows up for a driver on I&#8209;11 to Blue Area too, because
+        their roads overlap, in the right direction, before the driver ever leaves.
+      </p>
+      <div class="route-compare">
+        <div class="row">
+          <div class="tag no">Elsewhere</div>
+          <div class="txt">Shows drivers <b>near your pickup point</b>, even if their route goes nowhere close to your destination.</div>
+        </div>
+        <div class="row">
+          <div class="tag yes">Saath Sawari</div>
+          <div class="txt">Shows drivers whose <b>entire route overlaps yours</b>, in your direction, with pickup and drop-off in route order.</div>
+        </div>
+      </div>
+    </div>
+    <div class="split-media">
+      <div class="phone">
+        <div class="phone-screen"><img src="assets/screens/ride-detail.png" alt="A ride detail screen showing the rider's highlighted segment of the driver's route, with CNIC-verified and Star driver badges"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section-tint" id="how">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="section-eyebrow">How it works</div>
+      <h2>Three steps, every time.</h2>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">01</div>
+        <h3>Search your route</h3>
+        <p>Pick where you're starting and where you're going. Every car already passing that road shows up, colour-coded so you can tell them apart at a glance.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <h3>Ask for a seat</h3>
+        <p>See the driver's rating, car, CNIC-verified badge, and exactly which part of their route is yours before you request.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <h3>Share fuel in cash</h3>
+        <p>Agree a contribution &mdash; the app suggests one from fuel cost, the driver can adjust it. No wallet, no card, no surge.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="section-head">
+      <div class="section-eyebrow">See it in action</div>
+      <h2>Every screen, built for this.</h2>
+      <p>No stock photos. These are real screens, from a real search, on a real Islamabad road.</p>
+    </div>
+    <div class="gallery-row">
+      <div class="gallery-item"><div class="phone"><div class="phone-screen"><img src="assets/screens/welcome.png" alt="Welcome screen"></div></div><div class="gallery-caption">First open</div></div>
+      <div class="gallery-item"><div class="phone"><div class="phone-screen"><img src="assets/screens/signin.png" alt="Phone sign-in screen with trust pills"></div></div><div class="gallery-caption">Verified from screen one</div></div>
+      <div class="gallery-item"><div class="phone"><div class="phone-screen"><img src="assets/screens/route-map.png" alt="Search results with colour-coded routes"></div></div><div class="gallery-caption">Every ride on your route</div></div>
+      <div class="gallery-item"><div class="phone"><div class="phone-screen"><img src="assets/screens/ride-detail.png" alt="Ride detail screen with trust badges"></div></div><div class="gallery-caption">Know who you're riding with</div></div>
+      <div class="gallery-item"><div class="phone"><div class="phone-screen"><img src="assets/screens/post-ride.png" alt="Post a ride screen with route choice"></div></div><div class="gallery-caption">Pick the road you drive</div></div>
+      <div class="gallery-item"><div class="phone"><div class="phone-screen"><img src="assets/screens/driver-home.png" alt="Driver home screen with upcoming rides"></div></div><div class="gallery-caption">Your commute, your price</div></div>
+      <div class="gallery-item"><div class="phone"><div class="phone-screen"><img src="assets/screens/cnic.png" alt="CNIC verification screen"></div></div><div class="gallery-caption">Identity, properly verified</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="trust">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="section-eyebrow">Trust &amp; safety</div>
+      <h2>Built for how Islamabad actually commutes.</h2>
+      <p>Every trust feature below is live in the app today, not a roadmap promise.</p>
+    </div>
+    <div class="trust-grid">
+      <div class="trust-card">
+        <div class="trust-icon" style="background:var(--blue-bg); color:var(--blue);">&#128737;</div>
+        <h3>CNIC verification</h3>
+        <p>Drivers submit their CNIC front, back, and a selfie before they can offer rides. A human team checks they match.</p>
+      </div>
+      <div class="trust-card">
+        <div class="trust-icon" style="background:var(--rose-bg); color:var(--rose);">&#9792;</div>
+        <h3>Women-only rides</h3>
+        <p>Riders can filter to women-only, and drivers control exactly who sits where &mdash; by gender, seat by seat.</p>
+      </div>
+      <div class="trust-card">
+        <div class="trust-icon" style="background:var(--pine100); color:var(--pine700);">&#128205;</div>
+        <h3>Live trip sharing</h3>
+        <p>Share a live link of any trip with family &mdash; the car's position, the route, and who's in it, updating in real time.</p>
+      </div>
+      <div class="trust-card">
+        <div class="trust-icon" style="background:var(--amber-bg); color:var(--amber);">&#9888;</div>
+        <h3>SOS</h3>
+        <p>One button during any ride alerts emergency contacts with the live location, no fumbling for an app while something's wrong.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section-cream" id="drivers">
+  <div class="wrap split reverse">
+    <div class="split-media">
+      <div class="phone">
+        <div class="phone-screen"><img src="assets/screens/post-ride.png" alt="The post-a-ride screen showing a real route choice with distance, time and the roads it passes"></div>
+      </div>
+    </div>
+    <div>
+      <div class="section-eyebrow">For drivers</div>
+      <h2>Driving anyway? Earn your fuel back.</h2>
+      <p style="margin-top:14px; font-size:16.5px; line-height:1.6; color:var(--ink700);">
+        Post your commute once. Riders already on your road find you &mdash; you
+        don't go looking for them, and you never leave your own route to reach
+        anyone.
+      </p>
+      <div class="driver-points">
+        <div class="driver-point"><div class="dot"></div><p><b>Pick the actual road you drive</b> &mdash; Saath Sawari offers real route alternatives with distance and time, not a straight line.</p></div>
+        <div class="driver-point"><div class="dot"></div><p><b>Set who sits where</b> &mdash; front seat and each back seat, by gender, or keep a seat empty.</p></div>
+        <div class="driver-point"><div class="dot"></div><p><b>Repeat it once</b> &mdash; post a weekday commute and it stands until you cancel it.</p></div>
+        <div class="driver-point"><div class="dot"></div><p><b>You set the price</b> &mdash; the app suggests a fuel-cost contribution; you can offer your own.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="launch">
+  <div class="wrap">
+    <div class="launch">
+      <div>
+        <div class="eyebrow" style="color:rgba(255,255,255,0.6);">Launching office- and campus-first</div>
+        <h2>Liquidity killed earlier carpool apps in Pakistan. We're not repeating that.</h2>
+        <p>
+          Saath Sawari launches through verified office and university groups,
+          not a cold city-wide release &mdash; so from day one, everyone
+          searching a route is already commuting at the same hours, to the same
+          few places. If you run an office or a campus in Islamabad and want it
+          there first, we'd like to talk.
+        </p>
+      </div>
+      <div class="launch-cta">
+        <div class="label">Bring it to your group</div>
+        <div class="email" id="launch-email"></div>
+        <a class="btn btn-primary" id="launch-mail-btn" href="#">Email us</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section-tint">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="section-eyebrow">Questions</div>
+      <h2>Before you ask</h2>
+    </div>
+    <div class="faq">
+      <div class="faq-item">
+        <h3>Is this a taxi service?</h3>
+        <p>No. Drivers are commuters sharing a seat on a trip they're already making, not for-hire drivers. Contributions cover fuel cost, not a fare.</p>
+      </div>
+      <div class="faq-item">
+        <h3>How is a route match different from "nearby drivers"?</h3>
+        <p>The app checks whether a driver's actual road geometry passes within walking distance of your pickup and drop-off, in your direction &mdash; not just whether their starting point is close to yours.</p>
+      </div>
+      <div class="faq-item">
+        <h3>What if I only want women drivers or riders?</h3>
+        <p>Filter search to women-only rides, and as a driver, set front and back seats to women-only, any, or kept empty.</p>
+      </div>
+      <div class="faq-item">
+        <h3>Can my office or university get this first?</h3>
+        <p>Yes &mdash; that's the launch plan. Email us and we'll set your organisation up as a verified group.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-row">
+      <a class="brand" href="#top" style="color:#fff;">
+        <span class="brand-mark" style="background:rgba(255,255,255,0.12);"><svg><use href="#brand-icon"/></svg></span>
+        <span class="brand-name" style="color:#fff;">Saath Sawari</span>
+      </a>
+      <div class="foot-links">
+        <a href="/privacy">Privacy policy</a>
+        <a href="/terms">Terms of use</a>
+        <span id="foot-email"></span>
+      </div>
+    </div>
+    <div class="foot-fine">&copy; 2026 Saath Sawari, Islamabad.</div>
+  </div>
+</footer>
+
+<script src="config.js"></script>
+<script>
+(function () {
+  var cfg = window.SAATH_SAWARI || {};
+
+  function storeBadge(name, url, iconHtml) {
+    var tag = url ? 'a' : 'span';
+    var el = document.createElement(tag);
+    el.className = 'store-badge';
+    if (url) el.href = url;
+    el.innerHTML = iconHtml +
+      '<span class="store-text"><span class="store-sub">' + (url ? 'Get it on' : 'Coming soon on') +
+      '</span><br><span class="store-name">' + name + '</span></span>';
+    return el;
+  }
+
+  var playIcon = '<svg viewBox="0 0 24 24" fill="none"><path d="M4 2.5 15.5 12 4 21.5c-.3-.2-.5-.6-.5-1V3.5c0-.4.2-.8.5-1Z" fill="#fff"/><path d="M15.5 12 4 2.5c.15-.1.3-.15.47-.15.2 0 .4.06.56.17l12.1 7.08L15.5 12Z" fill="#9ED9C1"/><path d="M15.5 12 4 21.5c.15.1.3.15.47.15.2 0 .4-.06.56-.17l12.1-7.08L15.5 12Z" fill="#fff" opacity=".6"/><path d="M17.13 9.6 20.2 11.4c.53.3.53 1.1 0 1.4l-3.07 1.8L14.3 12l2.83-2.4Z" fill="#fff" opacity=".85"/></svg>';
+  var appleIcon = '<svg viewBox="0 0 24 24" fill="none"><path d="M16.4 12.9c0-2.2 1.8-3.3 1.9-3.3-1-1.5-2.6-1.7-3.2-1.7-1.4-.1-2.6.8-3.3.8-.7 0-1.8-.8-2.9-.8-1.5 0-2.9.9-3.7 2.2-1.6 2.7-.4 6.8 1.1 9 .8 1.1 1.7 2.3 2.9 2.3 1.2 0 1.6-.8 3-.8s1.8.8 3 .7c1.2 0 2-1.1 2.8-2.2.9-1.3 1.2-2.5 1.2-2.6-.1 0-2.8-1.1-2.8-4.6Z" fill="#fff"/><path d="M14 6.2c.6-.8 1.1-1.9 1-3-.9.1-2 .6-2.6 1.4-.6.7-1.1 1.8-1 2.9 1 .1 2-.5 2.6-1.3Z" fill="#fff"/></svg>';
+
+  var badges = document.getElementById('store-badges');
+  badges.appendChild(storeBadge('Google Play', cfg.playUrl, playIcon));
+  badges.appendChild(storeBadge('App Store', cfg.appStoreUrl, appleIcon));
+
+  if (cfg.supportEmail) {
+    document.getElementById('launch-email').textContent = cfg.supportEmail;
+    var mailBtn = document.getElementById('launch-mail-btn');
+    mailBtn.href = 'mailto:' + cfg.supportEmail + '?subject=' + encodeURIComponent('Saath Sawari for our office/campus');
+    var footEmail = document.getElementById('foot-email');
+    footEmail.textContent = cfg.supportEmail;
+  }
+})();
+</script>
+</body>
+</html>
