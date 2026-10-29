@@ -1,4 +1,4 @@
-# Saath Sawari website
+# Saath Chalo website
 
 The marketing site: hero, the route-matching differentiator, trust & safety, for-drivers, the
 campus/office launch pitch, FAQ. Plain HTML, CSS and JS in `public/`, with no build step — mirrors
