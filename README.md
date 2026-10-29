@@ -41,14 +41,39 @@ Saves to `public/assets/screens/*.png`.
 
 ## Deployment
 
-Render's free static-site tier, same pattern as cashbook's `hisaab-book-website` — see
-[`render.yaml`](render.yaml). To stand it up:
+Live at **https://website.3-107-198-153.sslip.io**, served by the same EC2 box as the API
+(`3.107.198.153`), reusing its existing nginx + certbot setup rather than standing up a second
+host. Static files only — no app server, no proxy.
 
-1. Push this repo to GitHub.
-2. In Render, **New > Blueprint**, point it at the repo. It reads `render.yaml` and creates
-   `saath-sawari-website` with no further setup — no build step, `public/` served as-is.
-3. Render gives it a `*.onrender.com` URL immediately; a custom domain can be added to that
-   service later from the Render dashboard.
+```bash
+# From a machine with the server's key (~/.ssh/saath-chalo-ec2.pem):
+scp -i ~/.ssh/saath-chalo-ec2.pem -r public ec2-user@3.107.198.153:/tmp/saath-website-public
+ssh -i ~/.ssh/saath-chalo-ec2.pem ec2-user@3.107.198.153 '
+  sudo rm -rf /var/www/saath-chalo-website/public
+  sudo mkdir -p /var/www/saath-chalo-website
+  sudo mv /tmp/saath-website-public /var/www/saath-chalo-website/public
+  sudo chown -R root:root /var/www/saath-chalo-website
+  sudo find /var/www/saath-chalo-website -type d -exec chmod 755 {} \;
+  sudo find /var/www/saath-chalo-website -type f -exec chmod 644 {} \;
+'
+```
 
-Moving to a real domain only touches `public/config.js` (store URLs, support email) — the page
-itself has no hosting-specific code.
+`/var/www/saath-chalo-website` on purpose, not `/opt/saath-chalo/website`: the API's directory
+there is `chmod 750 saath:saath` so the app process is sandboxed to its own files, which also
+blocks nginx (running as its own `nginx` user) from reading anything under it. The site needs a
+path nginx can actually traverse.
+
+The nginx vhost is `/etc/nginx/conf.d/saath-chalo-website.conf` on the server (not checked in
+here, mirrors `../backend/deploy/ec2/nginx.conf`'s style but `root`s straight to the static files
+instead of proxying) — `server_name website.3-107-198-153.sslip.io`, HTTPS via
+`certbot --nginx -d website.3-107-198-153.sslip.io`.
+
+To redeploy after a content change, just re-run the `scp`/`ssh` above — nothing else needs
+touching unless the hostname changes.
+
+[`render.yaml`](render.yaml) is kept as a fallback: Render's free static-site tier, same pattern as
+cashbook's `hisaab-book-website`. Push to GitHub, then in Render **New > Blueprint** pointed at
+this repo — no further setup, no build step.
+
+A real domain, once bought, only touches `public/config.js` (store URLs, support email) and the
+nginx `server_name` / certbot cert — the page itself has no hosting-specific code.

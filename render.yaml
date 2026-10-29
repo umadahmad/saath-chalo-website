@@ -3,7 +3,7 @@
 # public/config.js, not here.
 services:
   - type: web
-    name: saath-sawari-website
+    name: saath-chalo-website
     runtime: static
     branch: main
     buildCommand: echo "No build step"
