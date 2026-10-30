@@ -1,8 +1,19 @@
 # Saath Chalo website
 
-The marketing site: hero, the route-matching differentiator, trust & safety, for-drivers, the
-campus/office launch pitch, FAQ. Plain HTML, CSS and JS in `public/`, with no build step — mirrors
-the cashbook project's `apps/website`.
+The marketing site, three pages built from the ChatGPT design handoff
+(`../website-chatgpt/HANDOFF.md` and its 1440px / 390px mockups):
+
+| Page | File |
+|---|---|
+| Home | `public/index.html` |
+| For organisations | `public/organisations.html` |
+| Safety | `public/safety.html` |
+
+Plain HTML, CSS and JS in `public/`, with no build step and no framework — mirrors the cashbook
+project's `apps/website`. Shared styles are in `public/css/site.css` (light theme only, on purpose),
+shared behaviour in `public/js/site.js`. Illustrations (Islamabad scene, corridor diagram, the
+sample dashboards) are inline SVG / HTML, never images. Fonts are Barlow and Barlow Semi Condensed
+from Google Fonts, plus Noto Naskh Arabic for the one Urdu line in the hero.
 
 Open `public/index.html` directly, or serve it locally:
 
@@ -10,20 +21,92 @@ Open `public/index.html` directly, or serve it locally:
 cd public && python -m http.server 8096 --bind 127.0.0.1
 ```
 
+The backend allows CORS from `http://localhost:8096`, so served this way the page also reads its
+section switches from the local API.
+
 ## Settings
 
 Everything that depends on hosting is in [`public/config.js`](public/config.js):
 
 | Setting | What it does |
 |---|---|
-| `playUrl` | The Play Store listing. Empty shows "Coming soon on Google Play" |
+| `playUrl` | The Play Store listing. Empty shows "Coming soon on Google Play" (not a link), and "Get the app" scrolls to the store badges instead |
 | `appStoreUrl` | The App Store listing. Empty shows "Coming soon on the App Store" |
-| `supportEmail` | For privacy requests, support and the office/campus contact form. Currently `support@saathchalo.pk` from the backend's `.env.example` — **not actually configured in the live backend**, confirm the real address before this goes public |
+| `supportEmail` | Footer "Say hello" address, the enquiry forms, and the fallback for "talk to us" buttons. Currently `support@saathchalo.pk` from the backend's `.env.example` — **not actually configured in the live backend**, and the design shows `hello@saathchalo.pk`; confirm the real address before this goes public |
+| `instagramUrl`, `facebookUrl`, `linkedinUrl` | Footer social links. Empty hides the link |
+| `apiBase` | The Saath Chalo API, default `http://localhost:3002/api/v1`. **Production sets this to the live API.** The site reads its section switches from `${apiBase}/site/config`, and the footer's Privacy policy / Terms of service / Delete my account links go to `/privacy`, `/terms` and `/delete-account` on the same server (the API serves them outside `/api/v1`) |
+| `sections` | Section switch defaults, used until `/site/config` answers and kept if it never does (see below) |
+
+## Section switches
+
+Every section below the hero can be switched off without a deploy. Hero, navigation and footer are
+always shown. The backend serves the switches at `GET /api/v1/site/config` (public, no login);
+admins change them with `PUT /api/v1/admin/site/sections`.
+
+| Key | Page | Section | Default |
+|---|---|---|---|
+| `home_twin_city` | Home | "Made for the twin cities" strip | on |
+| `home_how_it_works` | Home | How it works (three steps) | on |
+| `home_corridor` | Home | The corridor idea (I-11 → Blue Area diagram) | on |
+| `home_safety` | Home | Trust is built into the ride (six safety features) | on |
+| `home_drivers` | Home | For drivers | on |
+| `home_organisations` | Home | For offices, universities & HR teams (with sample dashboard) | on |
+| `home_savings` | Home | Share the cost (illustrative monthly example) | on |
+| `home_reviews` | Home | Early-user stories ("Built around real twin-city routines") | **off** |
+| `home_areas` | Home | Where we go | on |
+| `home_enquiry` | Home | Bring Saath Chalo to your office (enquiry form) | on |
+| `home_faq` | Home | FAQ ("Before you head out") | on |
+| `org_benefits` | Organisations | Programme benefits (six cards) | on |
+| `org_dashboard` | Organisations | Employer dashboard | on |
+| `org_setup` | Organisations | Organisation setup (three steps) | on |
+| `org_pricing` | Organisations | Pricing panel ("Talk to us") | on |
+| `org_contact` | Organisations | Contact form | on |
+| `safety_basics` | Safety | The safety basics (four steps) | on |
+| `safety_groups` | Safety | Privacy in groups | on |
+| `safety_sos` | Safety | SOS ("Keep your emergency contacts close") | on |
+| `safety_shared_care` | Safety | Shared care (four cards) | on |
+| `safety_cta` | Safety | Final call to action ("Your route. Your choice.") | on |
+
+`home_reviews` is off because its three stories are sample launch copy, not verified testimonials
+(HANDOFF part 3). Turn it on only once they are replaced with permissioned quotes from real users.
+
+How it works on the page:
+
+- Each switchable section carries `data-section="<key>"`. A section that defaults to off also has
+  the `hidden` attribute in the HTML, so it never flashes on screen before the script runs.
+- On load `js/site.js` applies the `config.js` defaults at once, then fetches `/site/config` with a
+  2.5-second timeout and applies the answer. If the API is down or slow, the defaults stay.
+- Links to a hidden section disappear with it — nav, mobile menu, footer and in-page buttons, also
+  across pages (links carry `data-requires="<key>"`). The main "talk to us" buttons
+  (`data-fallback="mail"`) switch to a `mailto:` to `supportEmail` instead of disappearing.
+- To preview a combination in your own browser only, add a query string:
+  `index.html?sections=home_reviews:1,home_faq:0`. Nobody else sees it.
+
+To flip a switch for everyone, call the API with an admin's access token (sign in as a user whose
+`role` is `admin`; see `../backend/CLAUDE.md`). Switches you leave out keep their current value:
+
+```bash
+curl -X PUT "$API/api/v1/admin/site/sections" \
+  -H "Authorization: Bearer $ADMIN_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"sections":{"home_reviews":true}}'
+```
+
+The response is the full set of switches. Visitors see the change on their next page load.
+
+## Enquiry forms
+
+The Home office enquiry and the Organisations contact form are front-end only. Submitting
+validates the fields, then opens the visitor's email app with the details filled in, addressed to
+`supportEmail`; the page says plainly that nothing is sent until they press send there. Before
+launch they need a real endpoint with server-side validation, rate limiting, consent and spam
+protection (HANDOFF 1.5 / part 3).
 
 ## Screenshots
 
 The phone screenshots are real screens from the local staging build (driver 1 / rider 1's seeded
-test routes), never mockups or stock photos:
+test routes), never mockups or stock photos. The hero uses `route-map.png` (search results: three
+cars already passing I-11 PHA) and the drivers section uses `post-ride.png`:
 
 ```bash
 # 1. Rebuild the app against local staging (see ../backend/CLAUDE.md, "Local copy of staging")
@@ -43,7 +126,8 @@ Saves to `public/assets/screens/*.png`.
 
 Live at **https://website.3-107-198-153.sslip.io**, served by the same EC2 box as the API
 (`3.107.198.153`), reusing its existing nginx + certbot setup rather than standing up a second
-host. Static files only — no app server, no proxy.
+host. Static files only — no app server, no proxy. Before deploying, set `apiBase` in
+`public/config.js` to the live API so the section switches and legal links point at production.
 
 ```bash
 # From a machine with the server's key (~/.ssh/saath-chalo-ec2.pem):
@@ -66,7 +150,8 @@ path nginx can actually traverse.
 The nginx vhost is `/etc/nginx/conf.d/saath-chalo-website.conf` on the server (not checked in
 here, mirrors `../backend/deploy/ec2/nginx.conf`'s style but `root`s straight to the static files
 instead of proxying) — `server_name website.3-107-198-153.sslip.io`, HTTPS via
-`certbot --nginx -d website.3-107-198-153.sslip.io`.
+`certbot --nginx -d website.3-107-198-153.sslip.io`. The API's CORS origins must include the
+website's origin, or the switches silently fall back to the `config.js` defaults.
 
 To redeploy after a content change, just re-run the `scp`/`ssh` above — nothing else needs
 touching unless the hostname changes.
@@ -75,5 +160,5 @@ touching unless the hostname changes.
 cashbook's `hisaab-book-website`. Push to GitHub, then in Render **New > Blueprint** pointed at
 this repo — no further setup, no build step.
 
-A real domain, once bought, only touches `public/config.js` (store URLs, support email) and the
-nginx `server_name` / certbot cert — the page itself has no hosting-specific code.
+A real domain, once bought, only touches `public/config.js` (store URLs, support email, API base)
+and the nginx `server_name` / certbot cert — the pages themselves have no hosting-specific code.

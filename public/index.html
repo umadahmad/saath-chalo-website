@@ -3,533 +3,551 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Saath Chalo — Islamabad carpooling</title>
+<title>Saath Chalo — Cars already going your way | Islamabad &amp; Rawalpindi carpooling</title>
+<meta name="description" content="Share your daily commute across Islamabad and Rawalpindi. Route-corridor matching, verified groups, and fuel shared in cash — never a fare.">
+<meta name="theme-color" content="#F4FCF8">
 <link rel="icon" type="image/png" href="favicon.png">
-<meta name="description" content="Islamabad carpooling that matches you with drivers already on your exact road.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
-<style>
-  /*
-    Saath Chalo marketing site — single light theme by deliberate choice
-    (standing preference): no dark-mode variant.
-
-    Plain HTML, CSS and JS, no build step (see README.md) — mirrors the
-    cashbook project's apps/website. Layout: a vertical story told in
-    alternating-tint sections (white / pine-tint / cream), each opening on
-    a thesis line, with phone-mockup screenshots as the recurring proof
-    device. One typeface family (Barlow, the app's own) for full brand
-    continuity between the app and this page; IBM Plex Mono for small
-    data-ish labels (route names, stats).
-  */
-  :root {
-    color-scheme: light;
-    --pine600: #0A7B5C;
-    --pine700: #075E46;
-    --pine800: #054A36;
-    --pine50:  #ECF7F2;
-    --pine100: #D5EFE3;
-    --brand-end: #12A07A;
-    --cream: #FBF3E7;
-    --cream-line: #EFE2CE;
-    --ink900: #14212B;
-    --ink700: #3B4A55;
-    --ink500: #586874;
-    --canvas: #F6F8F7;
-    --surface: #FFFFFF;
-    --line200: #DDE4E0;
-    --amber: #9A5B00;
-    --amber-bg: #FFF4DF;
-    --blue: #1E5BD8;
-    --blue-bg: #EAF0FD;
-    --rose: #B23366;
-    --rose-bg: #FCEAF1;
-    --font-display: 'Barlow', -apple-system, sans-serif;
-    --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
-  }
-
-  * { box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
-  body {
-    margin: 0;
-    background: var(--canvas);
-    color: var(--ink900);
-    font-family: var(--font-display);
-    -webkit-font-smoothing: antialiased;
-  }
-  img { max-width: 100%; display: block; }
-  h1, h2, h3 { text-wrap: balance; margin: 0; }
-  p { margin: 0; }
-  a { color: inherit; }
-  [hidden] { display: none !important; }
-
-  .wrap { max-width: 1120px; margin: 0 auto; padding-inline: 24px; }
-  @media (max-width: 640px) { .wrap { padding-inline: 18px; } }
-
-  /* ---------- Nav ---------- */
-  .nav {
-    position: sticky; top: 0; z-index: 50;
-    background: rgba(246, 248, 247, 0.88);
-    backdrop-filter: blur(10px);
-    border-bottom: 1px solid var(--line200);
-  }
-  .nav-row { display: flex; align-items: center; justify-content: space-between; padding-block: 14px; }
-  .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
-  .brand-mark {
-    width: 34px; height: 34px; border-radius: 10px; background: var(--pine600);
-    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-  }
-  .brand-mark svg { width: 20px; height: 20px; }
-  .brand-name { font-weight: 800; font-size: 17px; color: var(--ink900); }
-  .nav-links { display: flex; gap: 28px; align-items: center; }
-  .nav-links a { text-decoration: none; color: var(--ink700); font-weight: 600; font-size: 14.5px; }
-  .nav-links a:hover { color: var(--pine700); }
-  @media (max-width: 760px) { .nav-links { display: none; } }
-  .btn {
-    display: inline-flex; align-items: center; gap: 8px;
-    font-family: var(--font-display); font-weight: 700; font-size: 14.5px;
-    padding: 11px 20px; border-radius: 999px; text-decoration: none;
-    border: 1.5px solid transparent; cursor: pointer;
-  }
-  .btn-primary { background: var(--pine600); color: #fff; }
-  .btn-primary:hover { background: var(--pine700); }
-  .btn-ghost { border-color: var(--line200); color: var(--ink900); background: transparent; }
-  .btn-ghost:hover { border-color: var(--pine600); color: var(--pine700); }
-
-  /* ---------- Hero ---------- */
-  .hero { background: linear-gradient(150deg, var(--pine700) 0%, var(--pine600) 46%, var(--brand-end) 100%); color: #fff; position: relative; overflow: hidden; }
-  .hero-inner { display: grid; grid-template-columns: 1.05fr 0.85fr; gap: 48px; align-items: center; padding-block: 72px 0; }
-  @media (max-width: 860px) { .hero-inner { grid-template-columns: 1fr; padding-block: 44px 0; text-align: left; } }
-  .eyebrow {
-    font-family: var(--font-mono); font-size: 12.5px; font-weight: 600;
-    letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.85);
-    margin-bottom: 18px; display: flex; align-items: center; gap: 10px;
-  }
-  .eyebrow::before { content: ''; width: 20px; height: 2px; background: rgba(255,255,255,0.6); }
-  .hero h1 { font-size: 50px; line-height: 1.08; font-weight: 800; letter-spacing: -0.015em; }
-  @media (max-width: 640px) { .hero h1 { font-size: 36px; } }
-  .hero-sub { margin-top: 22px; font-size: 18px; line-height: 1.55; color: rgba(255,255,255,0.92); max-width: 48ch; }
-  .hero-ctas { display: flex; gap: 14px; margin-top: 32px; flex-wrap: wrap; }
-  .hero .btn-ghost { border-color: rgba(255,255,255,0.4); color: #fff; }
-  .hero .btn-ghost:hover { border-color: #fff; background: rgba(255,255,255,0.08); }
-  .hero .btn-primary { background: #fff; color: var(--pine700); }
-  .hero .btn-primary:hover { background: var(--cream); }
-
-  .hero-stats { display: flex; gap: 28px; margin-top: 40px; padding-top: 28px; border-top: 1px solid rgba(255,255,255,0.22); flex-wrap: wrap; }
-  .stat-num { font-family: var(--font-mono); font-weight: 600; font-size: 24px; color: #fff; font-variant-numeric: tabular-nums; }
-  .stat-label { font-size: 12.5px; color: rgba(255,255,255,0.78); margin-top: 2px; }
-
-  /* ---------- Phone mockup ---------- */
-  .phone { width: 100%; max-width: 300px; margin-inline: auto; border-radius: 34px; background: #0d1a16; padding: 10px; box-shadow: 0 30px 60px -20px rgba(5, 30, 22, 0.55); }
-  .phone-screen { border-radius: 25px; overflow: hidden; aspect-ratio: 412 / 850; background: var(--canvas); position: relative; }
-  .phone-screen img { width: 100%; height: 100%; object-fit: cover; object-position: top center; }
-
-  /* ---------- Hero phone stack (3 overlapping screens) ---------- */
-  .phone-stack { position: relative; max-width: 360px; margin-inline: auto; padding-block: 36px 56px; }
-  .phone-stack .phone { position: relative; max-width: 220px; z-index: 2; }
-  .phone-stack .phone-side { position: absolute; top: 30px; max-width: 180px; z-index: 1; opacity: 0.92; filter: brightness(0.92); }
-  .phone-stack .phone-side.left { left: -46px; transform: rotate(-9deg); }
-  .phone-stack .phone-side.right { right: -46px; transform: rotate(9deg); }
-  @media (max-width: 860px) {
-    .phone-stack { max-width: 300px; padding-block: 20px 40px; }
-    .phone-stack .phone { max-width: 190px; }
-    .phone-stack .phone-side { max-width: 150px; }
-    .phone-stack .phone-side.left { left: -30px; }
-    .phone-stack .phone-side.right { right: -30px; }
-  }
-
-  /* ---------- Store badges ---------- */
-  .store-badges { display: flex; gap: 12px; margin-top: 18px; flex-wrap: wrap; }
-  .store-badge {
-    display: inline-flex; align-items: center; gap: 10px;
-    border: 1.5px solid rgba(255,255,255,0.3); border-radius: 12px;
-    padding: 9px 16px; cursor: default; user-select: none; text-decoration: none;
-  }
-  a.store-badge { cursor: pointer; }
-  a.store-badge:hover { border-color: #fff; background: rgba(255,255,255,0.08); }
-  .store-badge svg { width: 22px; height: 22px; flex-shrink: 0; }
-  .store-badge .store-text { line-height: 1.25; }
-  .store-badge .store-sub { font-size: 10px; letter-spacing: 0.04em; text-transform: uppercase; color: rgba(255,255,255,0.65); }
-  .store-badge .store-name { font-size: 14.5px; font-weight: 700; color: #fff; }
-
-  /* ---------- Sections ---------- */
-  section { padding-block: 88px; }
-  @media (max-width: 640px) { section { padding-block: 56px; } }
-  .section-tint { background: var(--pine50); }
-  .section-cream { background: var(--cream); }
-
-  .section-head { max-width: 640px; margin-bottom: 52px; }
-  .section-eyebrow { font-family: var(--font-mono); font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--pine700); margin-bottom: 14px; }
-  .section-head h2 { font-size: 34px; font-weight: 800; line-height: 1.18; }
-  @media (max-width: 640px) { .section-head h2 { font-size: 27px; } }
-  .section-head p { margin-top: 14px; font-size: 16.5px; line-height: 1.6; color: var(--ink700); }
-
-  /* ---------- Differentiator (split) ---------- */
-  .split { display: grid; grid-template-columns: 0.95fr 1.05fr; gap: 56px; align-items: center; }
-  @media (max-width: 860px) { .split { grid-template-columns: 1fr; } }
-  .split.reverse .split-media { order: -1; }
-  @media (max-width: 860px) { .split.reverse .split-media { order: 0; } }
-
-  .route-compare { background: var(--surface); border: 1px solid var(--line200); border-radius: 20px; padding: 22px; margin-top: 28px; }
-  .route-compare .row { display: flex; gap: 14px; padding-block: 12px; align-items: flex-start; }
-  .route-compare .row + .row { border-top: 1px dashed var(--line200); }
-  .route-compare .tag { flex-shrink: 0; width: 86px; font-family: var(--font-mono); font-size: 11px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; padding-top: 2px; }
-  .route-compare .tag.no { color: var(--ink500); }
-  .route-compare .tag.yes { color: var(--pine700); }
-  .route-compare .txt { font-size: 15px; line-height: 1.5; color: var(--ink700); }
-  .route-compare .txt b { color: var(--ink900); }
-
-  /* ---------- How it works ---------- */
-  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
-  @media (max-width: 760px) { .steps { grid-template-columns: 1fr; } }
-  .step-num { font-family: var(--font-mono); font-size: 13px; font-weight: 600; color: var(--pine700); background: var(--pine100); width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 18px; }
-  .step h3 { font-size: 19px; font-weight: 700; margin-bottom: 8px; }
-  .step p { font-size: 15px; line-height: 1.6; color: var(--ink700); }
-
-  /* ---------- Screenshot gallery ---------- */
-  .gallery-row { display: flex; gap: 20px; overflow-x: auto; padding-bottom: 12px; margin: 0 -24px; padding-inline: 24px; scroll-snap-type: x proximity; }
-  @media (max-width: 640px) { .gallery-row { margin: 0 -18px; padding-inline: 18px; } }
-  .gallery-item { flex-shrink: 0; width: 196px; scroll-snap-align: start; }
-  .gallery-item .phone { max-width: 196px; border-radius: 26px; padding: 8px; box-shadow: 0 18px 36px -16px rgba(5, 30, 22, 0.28); }
-  .gallery-item .phone-screen { border-radius: 19px; }
-  .gallery-caption { margin-top: 14px; font-size: 13.5px; font-weight: 700; color: var(--ink900); text-align: center; }
-
-  /* ---------- Trust grid ---------- */
-  .trust-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
-  @media (max-width: 640px) { .trust-grid { grid-template-columns: 1fr; } }
-  .trust-card { background: var(--surface); border: 1px solid var(--line200); border-radius: 18px; padding: 26px; }
-  .trust-icon { width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px; font-size: 20px; }
-  .trust-card h3 { font-size: 17px; font-weight: 700; margin-bottom: 6px; }
-  .trust-card p { font-size: 14.5px; line-height: 1.55; color: var(--ink700); }
-
-  /* ---------- For drivers ---------- */
-  .driver-points { display: grid; gap: 16px; margin-top: 28px; }
-  .driver-point { display: flex; gap: 14px; align-items: flex-start; }
-  .driver-point .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--pine600); margin-top: 8px; flex-shrink: 0; }
-  .driver-point p { font-size: 15.5px; line-height: 1.55; color: var(--ink700); }
-  .driver-point b { color: var(--ink900); }
-
-  /* ---------- Launch / campus ---------- */
-  .launch { background: var(--ink900); color: #fff; border-radius: 28px; padding: 56px 48px; display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 40px; align-items: center; }
-  @media (max-width: 760px) { .launch { grid-template-columns: 1fr; padding: 36px 26px; } }
-  .launch h2 { font-size: 30px; font-weight: 800; line-height: 1.2; color: #fff; }
-  .launch p { margin-top: 16px; font-size: 15.5px; line-height: 1.6; color: rgba(255,255,255,0.78); }
-  .launch-cta { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.14); border-radius: 18px; padding: 24px; }
-  .launch-cta .label { font-family: var(--font-mono); font-size: 11.5px; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.6); margin-bottom: 10px; }
-  .launch-cta .email { font-family: var(--font-mono); font-size: 17px; font-weight: 600; color: #fff; word-break: break-all; }
-  .launch-cta .btn-primary { margin-top: 16px; width: 100%; justify-content: center; }
-
-  /* ---------- FAQ ---------- */
-  .faq { display: grid; gap: 1px; background: var(--line200); border: 1px solid var(--line200); border-radius: 16px; overflow: hidden; }
-  .faq-item { background: var(--surface); padding: 22px 24px; }
-  .faq-item h3 { font-size: 15.5px; font-weight: 700; margin-bottom: 8px; }
-  .faq-item p { font-size: 14.5px; line-height: 1.6; color: var(--ink700); }
-
-  /* ---------- Footer ---------- */
-  footer { background: var(--pine800); color: rgba(255,255,255,0.75); padding-block: 48px; }
-  .foot-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; }
-  .foot-links { display: flex; gap: 22px; flex-wrap: wrap; }
-  .foot-links span, .foot-links a { font-size: 13.5px; color: rgba(255,255,255,0.55); text-decoration: none; }
-  .foot-links a:hover { color: #fff; }
-  .foot-fine { margin-top: 26px; font-size: 12.5px; color: rgba(255,255,255,0.45); line-height: 1.6; }
-</style>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&family=Barlow+Semi+Condensed:wght@500;600;700&family=Noto+Naskh+Arabic:wght@600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/site.css">
 </head>
 <body>
+<a class="skip-link" href="#main">Skip to content</a>
 
-<svg hidden>
-  <symbol id="brand-icon" viewBox="0 0 1024 1024">
-    <path d="M 288,560 C 395,563 508,521 574,433 C 606,390 625,345 636,292 L 687,292 C 670,393 637,472 590,529 C 515,620 402,647 288,628 Z" fill="#D5EFE3"/>
-    <circle cx="288" cy="560" r="68" fill="#D5EFE3"/>
-    <path d="M 405,742 C 520,707 611,639 640,550 C 652,514 654,474 654,432 L 654,280 L 606,280 L 670,198 L 734,280 L 700,280 L 700,432 C 700,489 697,537 679,584 C 641,684 553,760 453,795 Z" fill="#FFFFFF"/>
-    <path d="M 511,737 C 539,721 563,702 584,679" fill="none" stroke="#0A7B5C" stroke-width="17" stroke-linecap="round"/>
-    <path d="M 604,653 C 624,627 639,600 649,571" fill="none" stroke="#0A7B5C" stroke-width="17" stroke-linecap="round"/>
-    <path d="M 660,535 C 667,505 669,478 669,450" fill="none" stroke="#0A7B5C" stroke-width="17" stroke-linecap="round"/>
-    <path d="M 670,407 L 670,378" fill="none" stroke="#0A7B5C" stroke-width="17" stroke-linecap="round"/>
-    <circle cx="405" cy="742" r="68" fill="#FFFFFF"/>
-  </symbol>
+<svg hidden aria-hidden="true">
+  <symbol id="i-brand" viewBox="0 0 24 24"><path d="M4.5 12.5 9.5 17.5 19.5 7" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5 9.5 17 19 7.5" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-check-thin" viewBox="0 0 24 24"><path d="M5 12.5 9.5 17 19 7.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-arrow-ur" viewBox="0 0 24 24"><path d="M7 17 17 7M8.5 7H17v8.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-arrow-down" viewBox="0 0 24 24"><path d="M12 4.5v15M6 13.5l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-arrow-right" viewBox="0 0 24 24"><path d="M4.5 12h15M13.5 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m5 9 7 7 7-7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-shield-check" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.2 19 6v5.2c0 4.4-2.9 8-7 9.6-4.1-1.6-7-5.2-7-9.6V6l7-2.8Z"/><path d="m9 12 2.1 2.1L15.2 10"/></g></symbol>
+  <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 19.5s-7-4.3-7-9.6A3.9 3.9 0 0 1 12 7.6a3.9 3.9 0 0 1 7 2.3c0 5.3-7 9.6-7 9.6Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+  <symbol id="i-shield-plus" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.2 19 6v5.2c0 4.4-2.9 8-7 9.6-4.1-1.6-7-5.2-7-9.6V6l7-2.8Z"/><path d="M12 9v6M9 12h6"/></g></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4 21 19.5H3L12 4Z"/><path d="M12 10v4.2M12 17h.01"/></g></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="9" r="3"/><path d="M3.5 18.5c.5-2.8 2.7-4.5 5.5-4.5s5 1.7 5.5 4.5"/><path d="M15.5 6.3a3 3 0 0 1 0 5.4M17 14.3c2 .5 3.2 2 3.5 4.2"/></g></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 4 2.5 5.1 5.6.8-4 3.9.9 5.6-5-2.7-5 2.7.9-5.6-4-3.9 5.6-.8L12 4Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="3.2"/><path d="M12 3v3.5M12 17.5V21M3 12h3.5M17.5 12H21"/></g></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5.5" width="17" height="13" rx="2"/><path d="m4 7 8 6 8-6"/></g></symbol>
+  <symbol id="i-cap" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 9.5 12 5l9.5 4.5L12 14 2.5 9.5Z"/><path d="M6.5 11.5v4.3c3.2 2.3 7.8 2.3 11 0v-4.3"/></g></symbol>
+  <symbol id="i-heart-fill" viewBox="0 0 24 24"><path d="M12 20s-8-4.8-8-10.7A4.3 4.3 0 0 1 12 7a4.3 4.3 0 0 1 8 2.3C20 15.2 12 20 12 20Z" fill="currentColor"/></symbol>
 </svg>
 
-<nav class="nav">
-  <div class="wrap nav-row">
-    <a class="brand" href="#top">
-      <span class="brand-mark"><svg><use href="#brand-icon"/></svg></span>
+<header class="site-header">
+  <div class="container header-row">
+    <a class="brand" href="index.html" aria-label="Saath Chalo home">
+      <span class="brand-mark"><svg aria-hidden="true"><use href="#i-brand"/></svg></span>
       <span class="brand-name">Saath Chalo</span>
     </a>
-    <div class="nav-links">
-      <a href="#how">How it works</a>
-      <a href="#drivers">For drivers</a>
-      <a href="#trust">Trust &amp; safety</a>
-      <a href="#launch">Bring it to your office</a>
-    </div>
-    <a class="btn btn-primary" href="#launch">Get in touch</a>
+    <nav class="nav-links" aria-label="Main">
+      <a href="#how" data-requires="home_how_it_works">How it works</a>
+      <a href="organisations.html">For organisations</a>
+      <a href="safety.html">Safety</a>
+      <a href="#areas" data-requires="home_areas">Where we go</a>
+    </nav>
+    <a class="btn btn-primary header-cta" href="#enquiry" data-requires="home_enquiry" data-fallback="mail">Bring us to your office <svg aria-hidden="true"><use href="#i-arrow-ur"/></svg></a>
+    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="mobile-menu" aria-label="Open menu"><svg aria-hidden="true"><use href="#i-menu"/></svg></button>
   </div>
-</nav>
-
-<header class="hero" id="top">
-  <div class="wrap hero-inner">
-    <div>
-      <div class="eyebrow">Islamabad carpooling</div>
-      <h1>Same route?<br>Share the ride, save the fuel, save the cost.</h1>
-      <p class="hero-sub">
-        Driving I&#8209;11 to Blue Area every morning? Saath Chalo finds riders
-        already on your exact road &mdash; not just "nearby" &mdash; and lets you
-        split the fuel in cash, no wallet, no surge pricing.
-      </p>
-      <div class="hero-ctas">
-        <a class="btn btn-primary" href="#launch">Bring it to your office or campus</a>
-        <a class="btn btn-ghost" href="#how">See how it works</a>
-      </div>
-      <div class="store-badges" id="store-badges"></div>
-      <div class="hero-stats">
-        <div><div class="stat-num">100%</div><div class="stat-label">CNIC-verified drivers</div></div>
-        <div><div class="stat-num">PKR</div><div class="stat-label">Cash contribution, no wallet</div></div>
-        <div><div class="stat-num">Live</div><div class="stat-label">Trip sharing, every ride</div></div>
-      </div>
-    </div>
-    <div class="phone-stack">
-      <div class="phone phone-side left">
-        <div class="phone-screen"><img src="assets/screens/route-map.png" alt="Search results showing three candidate rides as colour-coded routes on a map"></div>
-      </div>
-      <div class="phone phone-side right">
-        <div class="phone-screen"><img src="assets/screens/post-ride.png" alt="Post-a-ride screen showing a real route choice"></div>
-      </div>
-      <div class="phone">
-        <div class="phone-screen"><img src="assets/screens/ride-detail.png" alt="A ride detail screen with CNIC-verified and Star driver badges"></div>
-      </div>
+  <div class="mobile-menu" id="mobile-menu" hidden>
+    <div class="container">
+      <ul>
+        <li><a href="#how" data-requires="home_how_it_works">How it works</a></li>
+        <li><a href="organisations.html">For organisations</a></li>
+        <li><a href="safety.html">Safety</a></li>
+        <li><a href="#areas" data-requires="home_areas">Where we go</a></li>
+      </ul>
+      <a class="btn btn-primary" href="#enquiry" data-requires="home_enquiry" data-fallback="mail">Bring us to your office <svg aria-hidden="true"><use href="#i-arrow-ur"/></svg></a>
     </div>
   </div>
 </header>
 
-<section id="differentiator">
-  <div class="wrap split">
-    <div>
-      <div class="section-eyebrow">The difference</div>
-      <h2>Not nearby. On your road.</h2>
-      <p style="margin-top:14px; font-size:16.5px; line-height:1.6; color:var(--ink700);">
-        Most carpool apps match on distance from a pin. Saath Chalo matches on
-        the actual road a driver already drives &mdash; so a rider going I&#8209;9
-        to Blue Area shows up for a driver on I&#8209;11 to Blue Area too, because
-        their roads overlap, in the right direction, before the driver ever leaves.
-      </p>
-      <div class="route-compare">
-        <div class="row">
-          <div class="tag no">Elsewhere</div>
-          <div class="txt">Shows drivers <b>near your pickup point</b>, even if their route goes nowhere close to your destination.</div>
+<main id="main">
+
+<!-- Hero: always shown -->
+<section class="hero home-hero" aria-labelledby="hero-title">
+  <div class="container hero-grid">
+    <div class="hero-copy">
+      <p class="eyebrow">Islamabad &amp; Rawalpindi · Daily commutes</p>
+      <h1 class="h1" id="hero-title">Cars already<br>going your way.</h1>
+      <p class="lead">Share your daily commute across Islamabad and Rawalpindi. Split the fuel in cash. Find a seat on a route that already passes you — without guessing a pickup time.</p>
+      <div class="hero-ctas">
+        <a class="btn btn-primary" href="#get-app" data-get-app>Get the app <svg aria-hidden="true"><use href="#i-arrow-ur"/></svg></a>
+        <a class="btn btn-secondary" href="#how" data-requires="home_how_it_works">See how it works <svg aria-hidden="true"><use href="#i-arrow-down"/></svg></a>
+      </div>
+      <div class="store-badges" id="get-app" data-store-badges></div>
+      <p class="urdu-line" lang="ur" dir="rtl">آپ کے راستے پر پہلے سے چلنے والی گاڑیاں</p>
+      <dl class="proof">
+        <div><dt>Route-first</dt><dd>Match along the road</dd></div>
+        <div><dt>Cash</dt><dd>Share fuel, never a fare</dd></div>
+        <div><dt>Local</dt><dd>Built for twin-city travel</dd></div>
+      </dl>
+    </div>
+
+    <div class="hero-visual">
+      <div class="hero-scene" aria-hidden="true">
+        <svg viewBox="0 0 550 448" preserveAspectRatio="xMidYMid slice">
+          <defs>
+            <linearGradient id="scene-bg" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#EEF9F3" stop-opacity="0"/>
+              <stop offset="0.18" stop-color="#ECF8F2"/>
+              <stop offset="1" stop-color="#E2F4EA"/>
+            </linearGradient>
+            <linearGradient id="hill-a" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#CDEBDB"/>
+              <stop offset="1" stop-color="#DDF2E7"/>
+            </linearGradient>
+          </defs>
+          <rect x="0" y="0" width="550" height="448" fill="url(#scene-bg)"/>
+          <!-- Margalla hills -->
+          <path d="M0 196 L58 150 L104 112 L150 140 L196 118 L250 160 L300 200 L300 448 L0 448 Z" fill="url(#hill-a)" opacity="0.85"/>
+          <path d="M260 200 L360 128 L420 150 L480 120 L550 150 L550 448 L260 448 Z" fill="#D7EFE2" opacity="0.8"/>
+          <path d="M0 250 C120 220 220 236 320 250 C410 262 480 250 550 236 L550 448 L0 448 Z" fill="#E4F5EC"/>
+          <!-- Faisal Mosque -->
+          <g fill="none" stroke="#86C8A8" stroke-width="2.2" stroke-linejoin="round">
+            <path d="M128 174 L92 248 L164 248 Z" fill="#EEF9F3"/>
+            <path d="M128 174 L114 248 M128 174 L142 248" stroke-width="1.4"/>
+            <path d="M128 150 V176 M121 158 H135" stroke-width="2"/>
+            <path d="M80 252 H178 L172 260 H86 Z" fill="#EEF9F3"/>
+          </g>
+          <text x="93" y="284" font-family="Barlow, Arial, sans-serif" font-size="9.5" font-weight="700" letter-spacing="0.4" fill="#4E9A78">FAISAL MOSQUE</text>
+          <!-- Roads -->
+          <path d="M0 312 C150 286 320 290 550 300" fill="none" stroke="#CBE7D8" stroke-width="2"/>
+          <path d="M0 360 C170 330 360 336 550 350" fill="none" stroke="#CFE9DB" stroke-width="2"/>
+          <!-- Blue Area towers -->
+          <g stroke="#A8D8C0" stroke-width="2" fill="#F3FBF7">
+            <rect x="398" y="186" width="42" height="138" rx="3"/>
+            <rect x="452" y="226" width="40" height="98" rx="3"/>
+          </g>
+          <g stroke="#9FD3B9" stroke-width="2" stroke-linecap="round">
+            <path d="M406 204 H430 M406 218 H430 M406 232 H430 M406 246 H430 M406 260 H430 M406 274 H430 M406 288 H430"/>
+            <path d="M460 244 H482 M460 258 H482 M460 272 H482"/>
+          </g>
+          <!-- Route into Blue Area -->
+          <path d="M384 336 C430 334 470 322 512 284" fill="none" stroke="#FFFFFF" stroke-width="12" stroke-linecap="round"/>
+          <path d="M384 336 C430 334 470 322 512 284" fill="none" stroke="#2BA678" stroke-width="3" stroke-dasharray="9 6" stroke-linecap="round"/>
+          <text x="400" y="356" font-family="Barlow, Arial, sans-serif" font-size="9.5" font-weight="700" letter-spacing="0.4" fill="#4E9A78">BLUE AREA</text>
+        </svg>
+      </div>
+
+      <div class="hero-phone">
+        <div class="phone">
+          <div class="phone-screen"><img src="assets/screens/route-map.png" width="824" height="1720" alt="The Saath Chalo app's search results: three cars already pass I-11 PHA on their way to the destination, drawn as colour-coded routes on a map of Islamabad and Rawalpindi"></div>
         </div>
-        <div class="row">
-          <div class="tag yes">Saath Chalo</div>
-          <div class="txt">Shows drivers whose <b>entire route overlaps yours</b>, in your direction, with pickup and drop-off in route order.</div>
-        </div>
+      </div>
+
+      <div class="float-card fc-direction">
+        <span class="fc-icon" aria-hidden="true"><svg><use href="#i-arrow-ur"/></svg></span>
+        <strong>In your direction</strong>
+        <span>Route match · not a taxi</span>
+      </div>
+      <div class="float-card fc-days">
+        <span class="fc-icon" aria-hidden="true"><svg><use href="#i-check-thin"/></svg></span>
+        <strong>Pick your days</strong>
+        <span>See every car that passes</span>
       </div>
     </div>
-    <div class="split-media">
+  </div>
+</section>
+
+<!-- home_twin_city -->
+<section class="city-strip" id="cities" data-section="home_twin_city" aria-label="Made for the twin cities">
+  <div class="container">
+    <p class="strip-label">Made for the twin cities</p>
+    <ul>
+      <li>Islamabad</li><li>Rawalpindi</li><li>I-10</li><li>Blue Area</li><li>DHA</li><li>Bahria Town</li>
+    </ul>
+  </div>
+</section>
+
+<!-- home_how_it_works -->
+<section class="section bg-base how" id="how" data-section="home_how_it_works" aria-labelledby="how-title">
+  <div class="container">
+    <div class="section-head">
+      <p class="eyebrow">Three steps. One better commute.</p>
+      <h2 class="h2" id="how-title">Your way to work,<br>with people going your way.</h2>
+      <p class="lead">No fixed pickup slot to guess. Just a route, the days you travel, and the cars already passing through.</p>
+    </div>
+    <ol class="grid-3">
+      <li class="card step-card">
+        <span class="num-badge" aria-hidden="true">01</span>
+        <h3 class="card-title">Pick your route and days</h3>
+        <p>Set where you start, where you are headed, and the weekdays you travel. Your commute can be one-way or both ways.</p>
+      </li>
+      <li class="card step-card">
+        <span class="num-badge" aria-hidden="true">02</span>
+        <h3 class="card-title">See every car already passing you</h3>
+        <p>Saath Chalo checks the road corridor and direction. Browse the drivers whose routes pass your area, in the order they pass it.</p>
+      </li>
+      <li class="card step-card">
+        <span class="num-badge" aria-hidden="true">03</span>
+        <h3 class="card-title">Ride together and share the fuel in cash</h3>
+        <p>Agree to ride, see your suggested fair fuel contribution, and pay your share directly in cash. It is cost-sharing, not a fare.</p>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<!-- home_corridor -->
+<section class="section bg-tint corridor" id="corridor" data-section="home_corridor" aria-labelledby="corridor-title">
+  <div class="container split">
+    <div>
+      <p class="eyebrow">The corridor idea</p>
+      <h2 class="h2" id="corridor-title">Not nearby.<br>On your road.</h2>
+      <p class="lead">A driver going from I-11 to Blue Area can pick up riders along the same road — I-10, I-9 Markaz and beyond — in the right direction.</p>
+      <ul class="check-list">
+        <li><span class="check-dot" aria-hidden="true"><svg><use href="#i-check"/></svg></span><span><b>Direction matters.</b> A car heading toward Blue Area is not matched with someone going the other way.</span></li>
+        <li><span class="check-dot" aria-hidden="true"><svg><use href="#i-check"/></svg></span><span><b>Order matters.</b> Stops are shown in the sequence the car reaches them.</span></li>
+        <li><span class="check-dot" aria-hidden="true"><svg><use href="#i-check"/></svg></span><span><b>Your days matter.</b> Choose the days you commute and see rides that repeat then.</span></li>
+      </ul>
+      <a class="btn btn-primary" href="#how" data-requires="home_how_it_works">See the three steps <svg aria-hidden="true"><use href="#i-arrow-ur"/></svg></a>
+    </div>
+
+    <figure class="card corridor-card">
+      <div class="corridor-map">
+        <svg viewBox="0 0 556 349" role="img" aria-labelledby="corridor-svg-title corridor-svg-desc">
+          <title id="corridor-svg-title">One road, one direction: I-11 to Blue Area</title>
+          <desc id="corridor-svg-desc">A driver's route runs from I-11 through I-10 and I-9 Markaz to Blue Area. Riders join at I-10 and I-9 Markaz, in the order the car reaches them.</desc>
+          <g stroke="#E5F2EB" stroke-width="1">
+            <path d="M80 0V349M170 0V349M260 0V349M350 0V349M440 0V349M530 0V349"/>
+            <path d="M0 60H556M0 119H556M0 179H556M0 239H556M0 295H556"/>
+          </g>
+          <path id="corridor-road" d="M48 284 C92 262 118 236 150 216 C188 194 216 194 242 189 C292 180 322 160 350 124 C380 86 424 70 472 52 C486 46 494 40 502 34" fill="none" stroke="#CADBD2" stroke-width="26" stroke-linecap="round"/>
+          <path d="M48 284 C92 262 118 236 150 216 C188 194 216 194 242 189 C292 180 322 160 350 124 C380 86 424 70 472 52 C486 46 494 40 502 34" fill="none" stroke="#FFFFFF" stroke-width="20" stroke-linecap="round"/>
+          <path d="M52 282 C92 262 118 236 150 216 C188 194 216 194 242 189 C292 180 322 160 350 124 C380 86 424 70 472 52 C486 46 494 40 502 34" fill="none" stroke="#159A68" stroke-width="3.2" stroke-dasharray="9 7" stroke-linecap="round"/>
+          <g fill="#11875C">
+            <circle cx="81" cy="272" r="8.5"/>
+            <circle cx="226" cy="195" r="8.5"/>
+            <circle cx="358" cy="107" r="8.5"/>
+            <circle cx="502" cy="35" r="8.5"/>
+          </g>
+          <!-- driver car -->
+          <g transform="translate(116 225)">
+            <rect x="10" y="0" width="40" height="15" rx="5" fill="#3CC48E"/>
+            <rect x="0" y="9" width="70" height="30" rx="7" fill="#11875C"/>
+            <path d="M16 7.5 H44" stroke="#D8F5E8" stroke-width="1.6" stroke-linecap="round"/>
+            <circle cx="16" cy="41" r="4.6" fill="#1D3B31"/>
+            <circle cx="53" cy="41" r="4.6" fill="#1D3B31"/>
+            <text x="35" y="28" text-anchor="middle" font-family="Barlow, Arial, sans-serif" font-size="8.5" font-weight="700" fill="#FFFFFF" letter-spacing="0.3">DRIVER</text>
+          </g>
+          <!-- rider 1 joins at I-10 -->
+          <g transform="translate(202 145)">
+            <circle r="17" fill="#DDF3E8"/>
+            <circle cy="-4" r="4.6" fill="#11875C"/>
+            <path d="M-8 8.5 C-8 2.5 8 2.5 8 8.5 Z" fill="#11875C"/>
+          </g>
+          <rect x="219" y="132" width="80" height="22" rx="8" fill="#FFFFFF" stroke="#D4E9DE"/>
+          <text x="259" y="147" text-anchor="middle" font-family="Barlow, Arial, sans-serif" font-size="10" font-weight="700" fill="#1F4A3B">Rider joins</text>
+          <!-- rider 2 joins at I-9 Markaz -->
+          <g transform="translate(332 56)">
+            <circle r="17" fill="#DDF3E8"/>
+            <circle cy="-4" r="4.6" fill="#11875C"/>
+            <path d="M-8 8.5 C-8 2.5 8 2.5 8 8.5 Z" fill="#11875C"/>
+          </g>
+          <rect x="348" y="42" width="81" height="22" rx="8" fill="#FFFFFF" stroke="#D4E9DE"/>
+          <text x="388" y="57" text-anchor="middle" font-family="Barlow, Arial, sans-serif" font-size="10" font-weight="700" fill="#1F4A3B">Rider joins</text>
+          <!-- labels -->
+          <g font-family="Barlow, Arial, sans-serif" font-weight="700" fill="#0E3B2C" font-size="14">
+            <text x="42" y="319">I-11</text>
+            <text x="194" y="234">I-10</text>
+            <text x="313" y="145">I-9 Markaz</text>
+            <text x="439" y="74">Blue Area</text>
+          </g>
+          <!-- one car, one direction -->
+          <rect x="33" y="32" width="123" height="39" rx="9" fill="#FFFFFF" stroke="#DCEBE3"/>
+          <text x="46" y="48" font-family="Barlow, Arial, sans-serif" font-size="8.5" fill="#6A7C74" letter-spacing="0.2">ONE CAR. ONE DIRECTION.</text>
+          <text x="46" y="62" font-family="Barlow, Arial, sans-serif" font-size="11" font-weight="700" fill="#0E3B2C">3 stops · route order</text>
+        </svg>
+      </div>
+      <figcaption class="corridor-legend">
+        <span><b>Driver:</b> I-11 → Blue Area</span>
+        <span><b>Riders join:</b> I-10 · I-9 Markaz</span>
+      </figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- home_safety -->
+<section class="section bg-base home-safety" id="safety" data-section="home_safety" aria-labelledby="safety-title">
+  <div class="container">
+    <div class="section-head">
+      <p class="eyebrow">Trust is built into the ride</p>
+      <h2 class="h2" id="safety-title">A commute should feel<br>safe from the start.</h2>
+      <p class="lead">Clear identity, clear choices, and people you can keep in the loop. Our safety features are part of the service — not a paid upgrade.</p>
+    </div>
+    <ul class="grid-3">
+      <li class="card feature-card">
+        <span class="icon-bubble" aria-hidden="true"><svg><use href="#i-shield-check"/></svg></span>
+        <h3 class="card-title">CNIC verification</h3>
+        <p>Verify identity before joining the community. A safer starting point for every driver and rider.</p>
+      </li>
+      <li class="card feature-card">
+        <span class="icon-bubble" aria-hidden="true"><svg><use href="#i-heart"/></svg></span>
+        <h3 class="card-title">Women-only rides</h3>
+        <p>Women can choose women-only rides. Drivers can set the option when they post a commute.</p>
+      </li>
+      <li class="card feature-card">
+        <span class="icon-bubble" aria-hidden="true"><svg><use href="#i-shield-plus"/></svg></span>
+        <h3 class="card-title">Live trip sharing</h3>
+        <p>Share your live trip with family or a trusted contact while you travel.</p>
+      </li>
+      <li class="card feature-card">
+        <span class="icon-bubble sos" aria-hidden="true"><svg><use href="#i-alert"/></svg></span>
+        <h3 class="card-title">SOS to your contacts</h3>
+        <p>Send an alert to your chosen emergency contacts with your live location.</p>
+      </li>
+      <li class="card feature-card">
+        <span class="icon-bubble" aria-hidden="true"><svg><use href="#i-users"/></svg></span>
+        <h3 class="card-title">Names stay private in groups</h3>
+        <p>See a member's commute first. Names are hidden until both people agree to start a conversation.</p>
+      </li>
+      <li class="card feature-card">
+        <span class="icon-bubble" aria-hidden="true"><svg><use href="#i-star"/></svg></span>
+        <h3 class="card-title">Ratings after a ride</h3>
+        <p>Share feedback after each trip and help the community make better choices over time.</p>
+      </li>
+    </ul>
+    <div class="after-grid">
+      <a class="btn btn-secondary" href="safety.html">Explore how safety works <svg aria-hidden="true"><use href="#i-arrow-ur"/></svg></a>
+    </div>
+  </div>
+</section>
+
+<!-- home_drivers -->
+<section class="section bg-cream drivers" id="drivers" data-section="home_drivers" aria-labelledby="drivers-title">
+  <div class="container split">
+    <div class="phone-wrap">
       <div class="phone">
-        <div class="phone-screen"><img src="assets/screens/ride-detail.png" alt="A ride detail screen showing the rider's highlighted segment of the driver's route, with CNIC-verified and Star driver badges"></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="section-tint" id="how">
-  <div class="wrap">
-    <div class="section-head">
-      <div class="section-eyebrow">How it works</div>
-      <h2>Three steps, every time.</h2>
-    </div>
-    <div class="steps">
-      <div class="step">
-        <div class="step-num">01</div>
-        <h3>Search your route</h3>
-        <p>Pick where you're starting and where you're going. Every car already passing that road shows up, colour-coded so you can tell them apart at a glance.</p>
-      </div>
-      <div class="step">
-        <div class="step-num">02</div>
-        <h3>Ask for a seat</h3>
-        <p>See the driver's rating, car, CNIC-verified badge, and exactly which part of their route is yours before you request.</p>
-      </div>
-      <div class="step">
-        <div class="step-num">03</div>
-        <h3>Share fuel in cash</h3>
-        <p>Agree a contribution &mdash; the app suggests one from fuel cost, the driver can adjust it. No wallet, no card, no surge.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section>
-  <div class="wrap">
-    <div class="section-head">
-      <div class="section-eyebrow">See it in action</div>
-      <h2>Every screen, built for this.</h2>
-      <p>No stock photos. These are real screens, from a real search, on a real Islamabad road.</p>
-    </div>
-    <div class="gallery-row">
-      <div class="gallery-item"><div class="phone"><div class="phone-screen"><img src="assets/screens/welcome.png" alt="Welcome screen"></div></div><div class="gallery-caption">First open</div></div>
-      <div class="gallery-item"><div class="phone"><div class="phone-screen"><img src="assets/screens/signin.png" alt="Phone sign-in screen with trust pills"></div></div><div class="gallery-caption">Verified from screen one</div></div>
-      <div class="gallery-item"><div class="phone"><div class="phone-screen"><img src="assets/screens/route-map.png" alt="Search results with colour-coded routes"></div></div><div class="gallery-caption">Every ride on your route</div></div>
-      <div class="gallery-item"><div class="phone"><div class="phone-screen"><img src="assets/screens/ride-detail.png" alt="Ride detail screen with trust badges"></div></div><div class="gallery-caption">Know who you're riding with</div></div>
-      <div class="gallery-item"><div class="phone"><div class="phone-screen"><img src="assets/screens/post-ride.png" alt="Post a ride screen with route choice"></div></div><div class="gallery-caption">Pick the road you drive</div></div>
-      <div class="gallery-item"><div class="phone"><div class="phone-screen"><img src="assets/screens/driver-home.png" alt="Driver home screen with upcoming rides"></div></div><div class="gallery-caption">Your commute, your price</div></div>
-      <div class="gallery-item"><div class="phone"><div class="phone-screen"><img src="assets/screens/cnic.png" alt="CNIC verification screen"></div></div><div class="gallery-caption">Identity, properly verified</div></div>
-    </div>
-  </div>
-</section>
-
-<section id="trust">
-  <div class="wrap">
-    <div class="section-head">
-      <div class="section-eyebrow">Trust &amp; safety</div>
-      <h2>Built for how Islamabad actually commutes.</h2>
-      <p>Every trust feature below is live in the app today, not a roadmap promise.</p>
-    </div>
-    <div class="trust-grid">
-      <div class="trust-card">
-        <div class="trust-icon" style="background:var(--blue-bg); color:var(--blue);">&#128737;</div>
-        <h3>CNIC verification</h3>
-        <p>Drivers submit their CNIC front, back, and a selfie before they can offer rides. A human team checks they match.</p>
-      </div>
-      <div class="trust-card">
-        <div class="trust-icon" style="background:var(--rose-bg); color:var(--rose);">&#9792;</div>
-        <h3>Women-only rides</h3>
-        <p>Riders can filter to women-only, and drivers control exactly who sits where &mdash; by gender, seat by seat.</p>
-      </div>
-      <div class="trust-card">
-        <div class="trust-icon" style="background:var(--pine100); color:var(--pine700);">&#128205;</div>
-        <h3>Live trip sharing</h3>
-        <p>Share a live link of any trip with family &mdash; the car's position, the route, and who's in it, updating in real time.</p>
-      </div>
-      <div class="trust-card">
-        <div class="trust-icon" style="background:var(--amber-bg); color:var(--amber);">&#9888;</div>
-        <h3>SOS</h3>
-        <p>One button during any ride alerts emergency contacts with the live location, no fumbling for an app while something's wrong.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="section-cream" id="drivers">
-  <div class="wrap split reverse">
-    <div class="split-media">
-      <div class="phone">
-        <div class="phone-screen"><img src="assets/screens/post-ride.png" alt="The post-a-ride screen showing a real route choice with distance, time and the roads it passes"></div>
+        <div class="phone-screen"><img src="assets/screens/post-ride.png" width="824" height="1720" alt="The Saath Chalo app's Post a ride screen: from I-11 PHA, a map of the route, the roads it passes, a choice between two real routes, and a Post weekday rides button"></div>
       </div>
     </div>
     <div>
-      <div class="section-eyebrow">For drivers</div>
-      <h2>Driving anyway? Earn your fuel back.</h2>
-      <p style="margin-top:14px; font-size:16.5px; line-height:1.6; color:var(--ink700);">
-        Post your commute once. Riders already on your road find you &mdash; you
-        don't go looking for them, and you never leave your own route to reach
-        anyone.
-      </p>
-      <div class="driver-points">
-        <div class="driver-point"><div class="dot"></div><p><b>Pick the actual road you drive</b> &mdash; Saath Chalo offers real route alternatives with distance and time, not a straight line.</p></div>
-        <div class="driver-point"><div class="dot"></div><p><b>Set who sits where</b> &mdash; front seat and each back seat, by gender, or keep a seat empty.</p></div>
-        <div class="driver-point"><div class="dot"></div><p><b>Repeat it once</b> &mdash; post a weekday commute and it stands until you cancel it.</p></div>
-        <div class="driver-point"><div class="dot"></div><p><b>You set the price</b> &mdash; the app suggests a fuel-cost contribution; you can offer your own.</p></div>
-      </div>
+      <p class="eyebrow">For drivers</p>
+      <h2 class="h2" id="drivers-title">Driving anyway?<br>Post your route once.</h2>
+      <p class="lead">Your daily commute already has a route. Let people travelling along it share the fuel — while you stay in control.</p>
+      <ul class="check-list">
+        <li><span class="check-dot" aria-hidden="true"><svg><use href="#i-check"/></svg></span><span><b>Repeat your weekdays.</b> Set a recurring commute instead of posting every morning.</span></li>
+        <li><span class="check-dot" aria-hidden="true"><svg><use href="#i-check"/></svg></span><span><b>Post both ways in one go.</b> Add your return journey and available days.</span></li>
+        <li><span class="check-dot" aria-hidden="true"><svg><use href="#i-check"/></svg></span><span><b>Choose who sits where.</b> Set available seats, including the third row in eligible SUVs and vans — up to 7 seats.</span></li>
+        <li><span class="check-dot" aria-hidden="true"><svg><use href="#i-check"/></svg></span><span><b>You set the contribution.</b> Saath Chalo suggests a fair fuel share. Agree directly; no fare or commission.</span></li>
+      </ul>
+      <a class="btn btn-primary" href="#get-app" data-get-app>Post your first route <svg aria-hidden="true"><use href="#i-arrow-ur"/></svg></a>
     </div>
   </div>
 </section>
 
-<section id="launch">
-  <div class="wrap">
-    <div class="launch">
+<!-- home_organisations -->
+<section class="section bg-org org-teaser" id="organisations" data-section="home_organisations" aria-labelledby="org-title">
+  <div class="container">
+    <div class="section-head">
+      <p class="eyebrow">For offices, universities &amp; HR teams</p>
+      <h2 class="h2" id="org-title">Make the commute<br>a workplace benefit.</h2>
+      <p class="lead">Bring colleagues and campus communities together in verified groups. Give people a simpler way to find shared rides — and give your team a clearer view of the commute.</p>
+    </div>
+    <div class="card org-panel">
       <div>
-        <div class="eyebrow" style="color:rgba(255,255,255,0.6);">Launching office- and campus-first</div>
-        <h2>Liquidity killed earlier carpool apps in Pakistan. We're not repeating that.</h2>
-        <p>
-          Saath Chalo launches through verified office and university groups,
-          not a cold city-wide release &mdash; so from day one, everyone
-          searching a route is already commuting at the same hours, to the same
-          few places. If you run an office or a campus in Islamabad and want it
-          there first, we'd like to talk.
-        </p>
+        <p class="tag-pill">Private groups for your people</p>
+        <h3 class="h3">One company group.<br>Better daily journeys.</h3>
+        <p class="body-copy">Create a verified office or university community with work-email checks, invite links and private HR-managed groups. Members can match along real routes without sharing their names publicly.</p>
+        <ul class="check-list">
+          <li><span class="check-dot" aria-hidden="true"><svg><use href="#i-check"/></svg></span><span>Verified colleagues and invite-only access.</span></li>
+          <li><span class="check-dot" aria-hidden="true"><svg><use href="#i-check"/></svg></span><span>Neighbourhood and work-hub groups — I-10, DHA, Bahria, Blue Area.</span></li>
+          <li><span class="check-dot" aria-hidden="true"><svg><use href="#i-check"/></svg></span><span>Commute dashboard for riders, seats, fuel contribution and estimated CO₂.</span></li>
+        </ul>
+        <a class="btn btn-primary" href="organisations.html">Bring Saath Chalo to your office <svg aria-hidden="true"><use href="#i-arrow-ur"/></svg></a>
       </div>
-      <div class="launch-cta">
-        <div class="label">Bring it to your group</div>
-        <div class="email" id="launch-email"></div>
-        <a class="btn btn-primary" id="launch-mail-btn" href="#">Email us</a>
-      </div>
+      <figure class="dashboard" aria-label="Sample employer dashboard with illustrative figures: 248 active riders, 614 seats filled, PKR 1.8 million fuel shared, about 1.2 tonnes of CO₂ avoided this month">
+        <div class="dash-head"><strong>Company commute</strong><span>This month <svg aria-hidden="true"><use href="#i-chevron"/></svg></span></div>
+        <div class="dash-kpis" aria-hidden="true">
+          <div class="dash-kpi"><span class="kpi">248</span><small>Active riders</small></div>
+          <div class="dash-kpi"><span class="kpi">614</span><small>Seats filled</small></div>
+          <div class="dash-kpi"><span class="kpi">PKR 1.8m</span><small>Fuel shared</small></div>
+        </div>
+        <div class="dash-chart" aria-hidden="true">
+          <i style="height:32%"></i><i style="height:56%"></i><i style="height:45%"></i><i style="height:72%"></i><i style="height:61%"></i><i style="height:87%"></i><i style="height:76%"></i><i style="height:100%"></i><i style="height:82%"></i><i style="height:93%"></i><i style="height:71%"></i><i style="height:99%"></i>
+        </div>
+        <figcaption class="dash-foot"><span>Commute activity · sample dashboard</span><span>CO₂ avoided &nbsp; ~1.2 t</span></figcaption>
+      </figure>
     </div>
   </div>
 </section>
 
-<section class="section-tint">
-  <div class="wrap">
+<!-- home_savings -->
+<section class="section bg-tint-deep savings" id="savings" data-section="home_savings" aria-labelledby="savings-title">
+  <div class="container split">
+    <div>
+      <p class="eyebrow">Share the cost. Not another car.</p>
+      <h2 class="h2" id="savings-title">Your commute can<br>cost less.</h2>
+      <p class="lead">When a few people who already travel the same way share one car, everyone can spend less on the journey.</p>
+      <p class="small-note">Example commute: I-11 to Blue Area, five days a week. A driver who regularly has a spare seat can receive a fair contribution towards fuel.</p>
+    </div>
+    <div class="card calc-card">
+      <p class="tag-pill">Illustrative monthly example</p>
+      <dl class="calc-rows">
+        <div class="calc-row"><dt>Route</dt><dd>I-11 <svg aria-hidden="true"><use href="#i-arrow-right"/></svg><span class="sr-only">to</span> Blue Area</dd></div>
+        <div class="calc-row"><dt>Travel days</dt><dd>5 / week</dd></div>
+        <div class="calc-row"><dt>Estimated fuel contribution</dt><dd>PKR 9,000</dd></div>
+      </dl>
+      <div class="calc-result">
+        <div><small>Potential monthly fuel saving</small><span class="kpi">PKR 9,000</span></div>
+        <span class="icon-bubble" aria-hidden="true"><svg><use href="#i-arrow-ur"/></svg></span>
+      </div>
+      <p class="calc-env"><b>Less traffic, too.</b> Fewer separate cars can mean lower commute emissions. Your organisation dashboard can estimate CO₂ avoided from shared trips.</p>
+      <p class="small-note">Illustrative example, not a guaranteed saving. Actual contributions depend on route length, fuel economy, seats filled and the amount agreed between commuters.</p>
+    </div>
+  </div>
+</section>
+
+<!-- home_reviews: off by default (sample copy, not verified testimonials) -->
+<section class="section bg-base stories" id="stories" data-section="home_reviews" aria-labelledby="stories-title" hidden>
+  <div class="container">
     <div class="section-head">
-      <div class="section-eyebrow">Questions</div>
-      <h2>Before you ask</h2>
+      <p class="eyebrow">A better way to get there</p>
+      <h2 class="h2" id="stories-title">Built around real<br>twin-city routines.</h2>
+      <p class="lead">These sample stories show the kind of everyday commute Saath Chalo is designed to support.</p>
     </div>
-    <div class="faq">
-      <div class="faq-item">
-        <h3>Is this a taxi service?</h3>
-        <p>No. Drivers are commuters sharing a seat on a trip they're already making, not for-hire drivers. Contributions cover fuel cost, not a fare.</p>
+    <div class="grid-3">
+      <figure class="card story-card">
+        <span class="q-mark" aria-hidden="true">“</span>
+        <blockquote>I leave I-10 at the same time most weekdays. Finding someone already heading towards Blue Area makes much more sense than arranging a special pickup.</blockquote>
+        <figcaption><span class="avatar" aria-hidden="true">AS</span><span><strong>Amina Shah</strong><span>Office commuter · I-10</span></span></figcaption>
+      </figure>
+      <figure class="card story-card">
+        <span class="q-mark" aria-hidden="true">“</span>
+        <blockquote>My route is the same every morning. I can post it once, add my return days, and decide how many seats I am comfortable offering.</blockquote>
+        <figcaption><span class="avatar" aria-hidden="true">FM</span><span><strong>Farhan Malik</strong><span>Driver · Bahria Town</span></span></figcaption>
+      </figure>
+      <figure class="card story-card">
+        <span class="q-mark" aria-hidden="true">“</span>
+        <blockquote>A verified group for our campus would make it easier to find students travelling along the same corridor, especially for regular classes.</blockquote>
+        <figcaption><span class="avatar" aria-hidden="true">HA</span><span><strong>Hira Ahmed</strong><span>University commuter · H-8</span></span></figcaption>
+      </figure>
+    </div>
+    <p class="small-note">Illustrative launch copy, not verified testimonials. Replace with approved quotes from real pilot users before publishing.</p>
+  </div>
+</section>
+
+<!-- home_areas -->
+<section class="section bg-tint areas" id="areas" data-section="home_areas" aria-labelledby="areas-title">
+  <div class="container">
+    <div class="section-head">
+      <p class="eyebrow">Where we go</p>
+      <h2 class="h2" id="areas-title">Across the routes<br>that connect the twin cities.</h2>
+      <p class="lead">Start with the neighbourhoods, campuses and work hubs you already travel between. Matches are based on the road and direction — not just a radius on a map.</p>
+    </div>
+    <ul class="grid-3">
+      <li class="card area-card">
+        <span class="icon-bubble small-icon" aria-hidden="true"><svg><use href="#i-pin"/></svg></span>
+        <h3 class="card-title">Islamabad</h3>
+        <p>I-8, I-9 Markaz, I-10, I-11, G-9, G-10, G-13, H-8, Blue Area, F-6 and surrounding sectors.</p>
+      </li>
+      <li class="card area-card">
+        <span class="icon-bubble small-icon" aria-hidden="true"><svg><use href="#i-pin"/></svg></span>
+        <h3 class="card-title">Rawalpindi</h3>
+        <p>Saddar, Satellite Town, Bahria Town, DHA, PWD and routes connecting into Islamabad.</p>
+      </li>
+      <li class="card area-card">
+        <span class="icon-bubble small-icon" aria-hidden="true"><svg><use href="#i-pin"/></svg></span>
+        <h3 class="card-title">Work and campus hubs</h3>
+        <p>Office and university groups can focus on their own regular travel corridors and verified communities.</p>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- home_enquiry -->
+<section class="bg-base enquiry" id="enquiry" data-section="home_enquiry" aria-labelledby="enquiry-title">
+  <div class="container split">
+    <div>
+      <p class="eyebrow">Bring Saath Chalo to your office</p>
+      <h2 class="h2" id="enquiry-title">A better commute<br>starts with a group.</h2>
+      <p class="lead">Tell us where your people travel from. We’ll help you set up a verified group and explore what a commute programme could look like.</p>
+      <ul class="support-points">
+        <li><span class="icon-bubble" aria-hidden="true"><svg><use href="#i-mail"/></svg></span><span><strong>For HR and workplace teams</strong><span>Company groups, invite links and commute insights.</span></span></li>
+        <li><span class="icon-bubble" aria-hidden="true"><svg><use href="#i-cap"/></svg></span><span><strong>For universities</strong><span>Verified campus communities and student ride matching.</span></span></li>
+      </ul>
+    </div>
+    <form class="card form-card" data-enquiry novalidate>
+      <div class="form-grid">
+        <div class="field"><label for="h-name">Your name</label><input id="h-name" name="name" type="text" autocomplete="name" placeholder="e.g. Sara Ahmed" required></div>
+        <div class="field"><label for="h-org">Organisation</label><input id="h-org" name="organisation" type="text" autocomplete="organization" placeholder="Company or university" required></div>
+        <div class="field"><label for="h-email">Work email</label><input id="h-email" name="email" type="email" autocomplete="email" placeholder="you@company.pk" required></div>
+        <div class="field"><label for="h-size">Approx. team size</label>
+          <select id="h-size" name="team_size"><option>Under 100</option><option>100–500</option><option>500–2,000</option><option>2,000+</option></select></div>
+        <div class="field full"><label for="h-from">Where do your people commute from?</label><textarea id="h-from" name="commute_from" rows="3" placeholder="e.g. I-10, DHA, Bahria Town to Blue Area"></textarea></div>
       </div>
-      <div class="faq-item">
-        <h3>How is a route match different from "nearby drivers"?</h3>
-        <p>The app checks whether a driver's actual road geometry passes within walking distance of your pickup and drop-off, in your direction &mdash; not just whether their starting point is close to yours.</p>
-      </div>
-      <div class="faq-item">
-        <h3>What if I only want women drivers or riders?</h3>
-        <p>Filter search to women-only rides, and as a driver, set front and back seats to women-only, any, or kept empty.</p>
-      </div>
-      <div class="faq-item">
-        <h3>Can my office or university get this first?</h3>
-        <p>Yes &mdash; that's the launch plan. Email us and we'll set your organisation up as a verified group.</p>
-      </div>
+      <button class="btn btn-primary btn-block" type="submit">Send an enquiry <svg aria-hidden="true"><use href="#i-arrow-ur"/></svg></button>
+      <p class="form-note">We’ll only use these details to respond to your enquiry.</p>
+      <p class="form-status" role="status" hidden></p>
+    </form>
+  </div>
+</section>
+
+<!-- home_faq -->
+<section class="bg-base faq" id="faq" data-section="home_faq" aria-labelledby="faq-title">
+  <div class="container">
+    <p class="eyebrow">Questions, answered</p>
+    <h2 class="h2" id="faq-title">Before you head out.</h2>
+    <div class="faq-list">
+      <div class="faq-item"><h3>Is Saath Chalo a taxi or ride-hailing service?</h3><p>No. Saath Chalo matches people who are already travelling in the same direction. Riders contribute towards shared fuel costs in cash. It is cost-sharing, never a fare or a taxi service.</p></div>
+      <div class="faq-item"><h3>How is the contribution worked out?</h3><p>The app suggests a fair share using the route and estimated fuel cost. The amount is discussed and agreed between the people travelling. Payment is made directly in cash, not through the app.</p></div>
+      <div class="faq-item"><h3>Is it safe for women?</h3><p>Women can choose women-only rides. Saath Chalo also supports CNIC verification, live trip sharing with family, SOS alerts to emergency contacts, ratings and private names in groups until both people agree to talk.</p></div>
+      <div class="faq-item"><h3>Which areas are supported?</h3><p>Saath Chalo is launching in Islamabad and Rawalpindi, including routes through sectors such as I-10, I-11 and G-13, work hubs like Blue Area, and neighbourhoods including DHA and Bahria Town. Availability depends on routes posted by the community.</p></div>
+      <div class="faq-item"><h3>What does Saath Chalo cost?</h3><p>The app is free to use. Safety features remain free. Organisations can contact us to discuss a managed company group and commute dashboard.</p></div>
+      <div class="faq-item"><h3>Can an SUV or van offer more seats?</h3><p>Yes. Eligible vehicles with a third row can offer up to seven seats. Drivers choose the seats and layout they are comfortable sharing.</p></div>
     </div>
   </div>
 </section>
 
-<footer>
-  <div class="wrap">
-    <div class="foot-row">
-      <a class="brand" href="#top" style="color:#fff;">
-        <span class="brand-mark" style="background:rgba(255,255,255,0.12);"><svg><use href="#brand-icon"/></svg></span>
-        <span class="brand-name" style="color:#fff;">Saath Chalo</span>
-      </a>
-      <div class="foot-links">
-        <a href="/privacy">Privacy policy</a>
-        <a href="/terms">Terms of use</a>
-        <span id="foot-email"></span>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <span class="brand-mark" aria-hidden="true"><svg><use href="#i-brand"/></svg></span>
+        <span class="brand-name">Saath Chalo</span>
+        <p>Cars already going your way. A more connected daily commute for Islamabad and Rawalpindi.</p>
+        <p class="made-in">Made in Islamabad <svg aria-hidden="true"><use href="#i-heart-fill"/></svg></p>
+      </div>
+      <nav class="footer-col" aria-labelledby="f-explore">
+        <h2 id="f-explore">Explore</h2>
+        <ul>
+          <li><a href="#how" data-requires="home_how_it_works">How it works</a></li>
+          <li><a href="#drivers" data-requires="home_drivers">For drivers</a></li>
+          <li><a href="organisations.html">For organisations</a></li>
+          <li><a href="safety.html">Safety</a></li>
+        </ul>
+      </nav>
+      <nav class="footer-col" aria-labelledby="f-help">
+        <h2 id="f-help">Help &amp; policies</h2>
+        <ul>
+          <li><a href="#faq" data-requires="home_faq">FAQs</a></li>
+          <li><a href="/privacy" data-legal="privacy">Privacy policy</a></li>
+          <li><a href="/terms" data-legal="terms">Terms of service</a></li>
+          <li><a href="/delete-account" data-legal="delete-account">Delete my account</a></li>
+        </ul>
+      </nav>
+      <div class="footer-col">
+        <h2>Say hello</h2>
+        <ul>
+          <li><a href="mailto:support@saathchalo.pk" data-support-email>support@saathchalo.pk</a></li>
+          <li hidden><a href="#" data-social="instagram" rel="noopener">Instagram <svg aria-hidden="true"><use href="#i-arrow-ur"/></svg></a></li>
+          <li hidden><a href="#" data-social="facebook" rel="noopener">Facebook <svg aria-hidden="true"><use href="#i-arrow-ur"/></svg></a></li>
+          <li hidden><a href="#" data-social="linkedin" rel="noopener">LinkedIn <svg aria-hidden="true"><use href="#i-arrow-ur"/></svg></a></li>
+        </ul>
       </div>
     </div>
-    <div class="foot-fine">&copy; 2026 Saath Chalo, Islamabad.</div>
+    <div class="footer-bottom">
+      <p>© 2026 Saath Chalo. All rights reserved.</p>
+      <p class="fb-right">Islamabad · Rawalpindi</p>
+    </div>
   </div>
 </footer>
 
 <script src="config.js"></script>
-<script>
-(function () {
-  var cfg = window.SAATH_SAWARI || {};
-
-  function storeBadge(name, url, iconHtml) {
-    var tag = url ? 'a' : 'span';
-    var el = document.createElement(tag);
-    el.className = 'store-badge';
-    if (url) el.href = url;
-    el.innerHTML = iconHtml +
-      '<span class="store-text"><span class="store-sub">' + (url ? 'Get it on' : 'Coming soon on') +
-      '</span><br><span class="store-name">' + name + '</span></span>';
-    return el;
-  }
-
-  var playIcon = '<svg viewBox="0 0 24 24" fill="none"><path d="M4 2.5 15.5 12 4 21.5c-.3-.2-.5-.6-.5-1V3.5c0-.4.2-.8.5-1Z" fill="#fff"/><path d="M15.5 12 4 2.5c.15-.1.3-.15.47-.15.2 0 .4.06.56.17l12.1 7.08L15.5 12Z" fill="#9ED9C1"/><path d="M15.5 12 4 21.5c.15.1.3.15.47.15.2 0 .4-.06.56-.17l12.1-7.08L15.5 12Z" fill="#fff" opacity=".6"/><path d="M17.13 9.6 20.2 11.4c.53.3.53 1.1 0 1.4l-3.07 1.8L14.3 12l2.83-2.4Z" fill="#fff" opacity=".85"/></svg>';
-  var appleIcon = '<svg viewBox="0 0 24 24" fill="none"><path d="M16.4 12.9c0-2.2 1.8-3.3 1.9-3.3-1-1.5-2.6-1.7-3.2-1.7-1.4-.1-2.6.8-3.3.8-.7 0-1.8-.8-2.9-.8-1.5 0-2.9.9-3.7 2.2-1.6 2.7-.4 6.8 1.1 9 .8 1.1 1.7 2.3 2.9 2.3 1.2 0 1.6-.8 3-.8s1.8.8 3 .7c1.2 0 2-1.1 2.8-2.2.9-1.3 1.2-2.5 1.2-2.6-.1 0-2.8-1.1-2.8-4.6Z" fill="#fff"/><path d="M14 6.2c.6-.8 1.1-1.9 1-3-.9.1-2 .6-2.6 1.4-.6.7-1.1 1.8-1 2.9 1 .1 2-.5 2.6-1.3Z" fill="#fff"/></svg>';
-
-  var badges = document.getElementById('store-badges');
-  badges.appendChild(storeBadge('Google Play', cfg.playUrl, playIcon));
-  badges.appendChild(storeBadge('App Store', cfg.appStoreUrl, appleIcon));
-
-  if (cfg.supportEmail) {
-    document.getElementById('launch-email').textContent = cfg.supportEmail;
-    var mailBtn = document.getElementById('launch-mail-btn');
-    mailBtn.href = 'mailto:' + cfg.supportEmail + '?subject=' + encodeURIComponent('Saath Chalo for our office/campus');
-    var footEmail = document.getElementById('foot-email');
-    footEmail.textContent = cfg.supportEmail;
-  }
-})();
-</script>
+<script src="js/site.js"></script>
 </body>
 </html>
