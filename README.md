@@ -26,14 +26,22 @@ section switches from the local API.
 
 ## Settings
 
-Everything that depends on hosting is in [`public/config.js`](public/config.js):
+Contact details and links are edited in the backend, not here: the site reads them from
+`${apiBase}/site/config` (the `contact` row of the `site_settings` table) on every load, and an admin
+changes them with `PUT /admin/site/contact`, for example
+`{"contact": {"support_email": "hello@saathchalo.pk", "play_url": "https://play.google.com/..."}}`.
+An empty string hides that link. [`public/config.js`](public/config.js) holds only the fallbacks used
+when the API can't be reached, plus the API address:
 
-| Setting | What it does |
-|---|---|
-| `playUrl` | The Play Store listing. Empty shows "Coming soon on Google Play" (not a link), and "Get the app" scrolls to the store badges instead |
-| `appStoreUrl` | The App Store listing. Empty shows "Coming soon on the App Store" |
-| `supportEmail` | Footer "Say hello" address, the enquiry forms, and the fallback for "talk to us" buttons. Currently `support@saathchalo.pk` from the backend's `.env.example` — **not actually configured in the live backend**, and the design shows `hello@saathchalo.pk`; confirm the real address before this goes public |
-| `instagramUrl`, `facebookUrl`, `linkedinUrl` | Footer social links. Empty hides the link |
+| Contact key (API) | config.js fallback | What it does |
+|---|---|---|
+| `support_email` | `supportEmail` | Footer "Say hello" address, the enquiry forms' fallback, and the "talk to us" buttons' fallback. Placeholder `support@saathchalo.pk` until the real address exists |
+| `play_url` | `playUrl` | The Play Store listing. Empty shows "Coming soon on Google Play" (not a link) |
+| `app_store_url` | `appStoreUrl` | The App Store listing. Empty shows "Coming soon on the App Store" |
+| `instagram_url`, `facebook_url`, `linkedin_url` | `instagramUrl`, ... | Footer social links. Empty hides the link. **Placeholder URLs for now** |
+
+The store and social links in the database are placeholders; replace them before launch.
+
 | `apiBase` | The Saath Chalo API, default `http://localhost:3002/api/v1`. **Production sets this to the live API.** The site reads its section switches from `${apiBase}/site/config`, and the footer's Privacy policy / Terms of service / Delete my account links go to `/privacy`, `/terms` and `/delete-account` on the same server (the API serves them outside `/api/v1`) |
 | `sections` | Section switch defaults, used until `/site/config` answers and kept if it never does (see below) |
 
@@ -96,11 +104,14 @@ The response is the full set of switches. Visitors see the change on their next 
 
 ## Enquiry forms
 
-The Home office enquiry and the Organisations contact form are front-end only. Submitting
-validates the fields, then opens the visitor's email app with the details filled in, addressed to
-`supportEmail`; the page says plainly that nothing is sent until they press send there. Before
-launch they need a real endpoint with server-side validation, rate limiting, consent and spam
-protection (HANDOFF 1.5 / part 3).
+The Home office enquiry and the Organisations contact form post to `POST ${apiBase}/site/enquiries`
+(no login, 5 per hour per visitor, a hidden honeypot field that drops bot submissions). They land in
+the `site_enquiries` table. Admins read them with `GET /admin/site/enquiries` (`?handled=false` for
+the unhandled ones) and mark one done with `PATCH /admin/site/enquiries/:id` `{"handled": true}`.
+If the API can't be reached the form tells the visitor to email the support address.
+
+**TODO:** the admin panel screen for enquiries (list, mark handled) and for the section and
+contact switches. Until it is built, use the endpoints above.
 
 ## Screenshots
 

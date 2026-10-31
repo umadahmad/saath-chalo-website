@@ -1,12 +1,22 @@
 // Shared behaviour for all three pages: section switches, store badges,
-// contact details, the mobile menu and the (front-end only) enquiry forms.
+// contact details, the mobile menu and the enquiry forms.
 // Loaded at the end of <body>, after config.js, so it runs before first paint.
 (function () {
   'use strict';
 
   var cfg = window.SAATH_SAWARI || {};
   var defaults = cfg.sections || {};
+  // Contact details start from config.js and are replaced by whatever
+  // /site/config answers (the backend's site_settings `contact` row), so an
+  // admin can change the email and links without touching the site.
   var email = cfg.supportEmail || '';
+  var links = {
+    play: cfg.playUrl || '',
+    appStore: cfg.appStoreUrl || '',
+    instagram: cfg.instagramUrl || '',
+    facebook: cfg.facebookUrl || '',
+    linkedin: cfg.linkedinUrl || '',
+  };
 
   /* ------------------------------------------------------------------
      Section switches
@@ -70,6 +80,20 @@
     });
   }
 
+  function applyContact(c) {
+    // A key the API leaves out keeps its config.js value; an empty string
+    // hides that link.
+    function pick(key, now) { return typeof c[key] === 'string' ? c[key].trim() : now; }
+    email = pick('support_email', email);
+    links.play = pick('play_url', links.play);
+    links.appStore = pick('app_store_url', links.appStore);
+    links.instagram = pick('instagram_url', links.instagram);
+    links.facebook = pick('facebook_url', links.facebook);
+    links.linkedin = pick('linkedin_url', links.linkedin);
+    renderStoreBadges();
+    renderContact();
+  }
+
   function fetchSections() {
     var base = (cfg.apiBase || '').replace(/\/+$/, '');
     if (!base || !window.fetch) return;
@@ -79,7 +103,9 @@
       .then(function (r) { return r.ok ? r.json() : null; })
       .then(function (data) {
         clearTimeout(timer);
-        if (data && data.sections && typeof data.sections === 'object') applySections(data.sections);
+        if (!data) return;
+        if (data.contact && typeof data.contact === 'object') applyContact(data.contact);
+        if (data.sections && typeof data.sections === 'object') applySections(data.sections);
       })
       .catch(function () { clearTimeout(timer); /* keep the config.js defaults */ });
   }
@@ -93,8 +119,8 @@
     document.querySelectorAll('[data-store-badges]').forEach(function (wrap) {
       wrap.innerHTML = '';
       [
-        { name: 'App Store', url: cfg.appStoreUrl, sub: 'Download on the' },
-        { name: 'Google Play', url: cfg.playUrl, sub: 'Get it on' },
+        { name: 'App Store', url: links.appStore, sub: 'Download on the' },
+        { name: 'Google Play', url: links.play, sub: 'Get it on' },
       ].forEach(function (s) {
         var el = document.createElement(s.url ? 'a' : 'span');
         el.className = 'store-badge';
@@ -105,7 +131,7 @@
         wrap.appendChild(el);
       });
     });
-    var store = cfg.playUrl || cfg.appStoreUrl;
+    var store = links.play || links.appStore;
     if (store) {
       document.querySelectorAll('[data-get-app]').forEach(function (a) { a.href = store; a.rel = 'noopener'; });
     }
@@ -127,7 +153,7 @@
       a.href = 'mailto:' + email;
     });
     ['instagram', 'facebook', 'linkedin'].forEach(function (name) {
-      var url = cfg[name + 'Url'];
+      var url = links[name];
       document.querySelectorAll('[data-social="' + name + '"]').forEach(function (a) {
         var li = a.closest('li') || a;
         if (url) { a.href = url; li.hidden = false; } else li.hidden = true;
@@ -161,35 +187,69 @@
   }
 
   /* ------------------------------------------------------------------
-     Enquiry forms: front-end only. They open the visitor's email app
-     with the details filled in, addressed to supportEmail. Nothing is
-     sent by the site itself, and the message says so.
+     Enquiry forms: sent to the Saath Chalo API (POST /site/enquiries),
+     where the admin panel reads them. If the API can't be reached the
+     visitor is pointed at the support email instead.
      ------------------------------------------------------------------ */
+  function showStatus(el, text, withEmail) {
+    if (!el) return;
+    el.hidden = false;
+    el.innerHTML = '';
+    el.appendChild(document.createTextNode(text));
+    if (withEmail && email) {
+      var a = document.createElement('a');
+      a.href = 'mailto:' + email;
+      a.textContent = email;
+      el.appendChild(a);
+      el.appendChild(document.createTextNode('.'));
+    }
+  }
+
   function initForms() {
+    var base = (cfg.apiBase || '').replace(/\/+$/, '');
     document.querySelectorAll('form[data-enquiry]').forEach(function (form) {
       var status = form.querySelector('.form-status');
+      var button = form.querySelector('button[type="submit"]');
+      // A field people never see; bots fill it and the API drops the enquiry.
+      var trap = document.createElement('input');
+      trap.type = 'text'; trap.name = 'company_site'; trap.tabIndex = -1;
+      trap.autocomplete = 'off'; trap.setAttribute('aria-hidden', 'true');
+      trap.style.cssText = 'position:absolute;left:-9999px;width:1px;height:1px;opacity:0';
+      form.appendChild(trap);
+
       form.addEventListener('submit', function (e) {
         e.preventDefault();
         if (!form.checkValidity()) { form.reportValidity(); return; }
-        if (!email) return;
-        var lines = [];
+        var body = { source: form.getAttribute('data-enquiry') || 'home', company_site: trap.value };
         form.querySelectorAll('input, select, textarea').forEach(function (f) {
-          var label = form.querySelector('label[for="' + f.id + '"]');
-          if (f.value) lines.push((label ? label.textContent : f.name) + ': ' + f.value);
+          if (!f.name || f === trap || !f.value) return;
+          // Both forms' free-text box ends up as the enquiry's message.
+          body[f.name === 'commute_from' || f.name === 'improve' ? 'message' : f.name] = f.value;
         });
-        var org = form.querySelector('[name="organisation"]');
-        var subject = 'Saath Chalo for ' + (org && org.value ? org.value : 'our organisation');
-        if (status) {
-          status.hidden = false;
-          status.innerHTML = '';
-          status.appendChild(document.createTextNode('Your email app should open with this enquiry addressed to '));
-          var a = document.createElement('a');
-          a.href = 'mailto:' + email;
-          a.textContent = email;
-          status.appendChild(a);
-          status.appendChild(document.createTextNode('. It is only sent once you press send there. If nothing opened, email us at that address directly.'));
-        }
-        window.location.href = mailHref(subject, lines.join('\n'));
+        if (button) button.disabled = true;
+        var ctrl = window.AbortController ? new AbortController() : null;
+        var timer = setTimeout(function () { if (ctrl) ctrl.abort(); }, 10000);
+        fetch(base + '/site/enquiries', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+          signal: ctrl ? ctrl.signal : undefined,
+          credentials: 'omit',
+        })
+          .then(function (r) {
+            clearTimeout(timer);
+            if (r.status === 429) throw new Error('busy');
+            if (!r.ok) throw new Error('failed');
+            form.reset();
+            showStatus(status, 'Thank you. We have your enquiry and will reply to ' + body.email + ' soon.');
+          })
+          .catch(function (err) {
+            clearTimeout(timer);
+            showStatus(status, err.message === 'busy'
+              ? 'You have sent a few enquiries already. Please try again in a while, or email us at '
+              : 'We could not send that just now. Please email us at ', true);
+          })
+          .then(function () { if (button) button.disabled = false; });
       });
     });
   }
