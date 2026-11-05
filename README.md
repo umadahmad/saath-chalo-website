@@ -110,8 +110,7 @@ the `site_enquiries` table. Admins read them with `GET /admin/site/enquiries` (`
 the unhandled ones) and mark one done with `PATCH /admin/site/enquiries/:id` `{"handled": true}`.
 If the API can't be reached the form tells the visitor to email the support address.
 
-**TODO:** the admin panel screen for enquiries (list, mark handled) and for the section and
-contact switches. Until it is built, use the endpoints above.
+The admin panel is built into the API at `/admin/` (Website tab: section switches, contact and links, enquiries). Admins sign in with an email and password; `node dist/src/scripts/grant-admin.js <email-or-phone>` on the server makes an account an admin.
 
 ## Screenshots
 
