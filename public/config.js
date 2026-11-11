@@ -1,7 +1,8 @@
-// Everything about the site that changes with where things are hosted. When
+// Everything about the site that changes with where things are hosted (the brand name
+// is in brand.js, not here). When
 // the domain or the app's own address arrives, this is the only file to
 // edit (see README.md).
-window.SAATH_SAWARI = {
+window.SITE_CONFIG = {
   // The Play Store listing. Empty shows "Coming soon on Google Play".
   playUrl: '',
 
@@ -19,7 +20,7 @@ window.SAATH_SAWARI = {
   facebookUrl: '',
   linkedinUrl: '',
 
-  // The Saath Chalo API. The site reads its section switches from
+  // The API. The site reads its section switches from
   // `${apiBase}/site/config`, and links the footer's privacy / terms /
   // delete-account pages to the same server (they live outside /api/v1).
   // Local default below; production sets this to the live API's base URL.

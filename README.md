@@ -1,4 +1,4 @@
-# Saath Chalo website
+# Vingo Ride website
 
 The marketing site, three pages built from the ChatGPT design handoff
 (`../website-chatgpt/HANDOFF.md` and its 1440px / 390px mockups):
@@ -8,6 +8,10 @@ The marketing site, three pages built from the ChatGPT design handoff
 | Home | `public/index.html` |
 | For organisations | `public/organisations.html` |
 | Safety | `public/safety.html` |
+
+## Brand name
+
+The name is set in **one file**, [`public/brand.js`](public/brand.js) (`name`, `shortName`, `previousName`). To rename: edit `name` there, run `node tools/apply-brand.js` from this folder (it rewrites the static copy of the name in the three pages, which search engines and visitors without JavaScript see, and updates `previousName`), then redeploy. Even before the script is run, `js/site.js` swaps `previousName` for `name` in the page, so a page never shows two names. Contact details are separate: they come from `config.js` and the API's `/site/config`. Not renamed on purpose: the repo name, the Render service `saath-chalo-website`, the server folder `/var/www/saath-chalo-website`, and the `saathchalo.pk` mail and web addresses.
 
 Plain HTML, CSS and JS in `public/`, with no build step and no framework — mirrors the cashbook
 project's `apps/website`. Shared styles are in `public/css/site.css` (light theme only, on purpose),
@@ -42,7 +46,7 @@ when the API can't be reached, plus the API address:
 
 The store and social links in the database are placeholders; replace them before launch.
 
-| `apiBase` | The Saath Chalo API, default `http://localhost:3002/api/v1`. **Production sets this to the live API.** The site reads its section switches from `${apiBase}/site/config`, and the footer's Privacy policy / Terms of service / Delete my account links go to `/privacy`, `/terms` and `/delete-account` on the same server (the API serves them outside `/api/v1`) |
+| `apiBase` | The API, default `http://localhost:3002/api/v1`. **Production sets this to the live API.** The site reads its section switches from `${apiBase}/site/config`, and the footer's Privacy policy / Terms of service / Delete my account links go to `/privacy`, `/terms` and `/delete-account` on the same server (the API serves them outside `/api/v1`) |
 | `sections` | Section switch defaults, used until `/site/config` answers and kept if it never does (see below) |
 
 ## Section switches
@@ -62,7 +66,7 @@ admins change them with `PUT /api/v1/admin/site/sections`.
 | `home_savings` | Home | Share the cost (illustrative monthly example) | on |
 | `home_reviews` | Home | Early-user stories ("Built around real twin-city routines") | **off** |
 | `home_areas` | Home | Where we go | on |
-| `home_enquiry` | Home | Bring Saath Chalo to your office (enquiry form) | on |
+| `home_enquiry` | Home | Bring us to your office (enquiry form) | on |
 | `home_faq` | Home | FAQ ("Before you head out") | on |
 | `org_benefits` | Organisations | Programme benefits (six cards) | on |
 | `org_dashboard` | Organisations | Employer dashboard | on |

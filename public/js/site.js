@@ -1,10 +1,11 @@
 // Shared behaviour for all three pages: section switches, store badges,
 // contact details, the mobile menu and the enquiry forms.
-// Loaded at the end of <body>, after config.js, so it runs before first paint.
+// Loaded at the end of <body>, after brand.js and config.js, so it runs before first paint.
 (function () {
   'use strict';
 
-  var cfg = window.SAATH_SAWARI || {};
+  var cfg = window.SITE_CONFIG || {};
+  var brand = window.SITE_BRAND || { name: 'Vingo Ride', shortName: 'Vingo' };
   var defaults = cfg.sections || {};
   // Contact details start from config.js and are replaced by whatever
   // /site/config answers (the backend's site_settings `contact` row), so an
@@ -17,6 +18,33 @@
     facebook: cfg.facebookUrl || '',
     linkedin: cfg.linkedinUrl || '',
   };
+
+  /* ------------------------------------------------------------------
+     Brand name
+     brand.js is the source of the name. The HTML carries a static copy
+     (see tools/apply-brand.js). If brand.js was edited and that script has
+     not been run yet, swap the old name for the new one here so the page
+     never shows two names.
+     ------------------------------------------------------------------ */
+  (function rebrand() {
+    var from = brand.previousName;
+    if (!from || from === brand.name) return;
+    var swap = function (text) { return text.split(from).join(brand.name); };
+    document.title = swap(document.title);
+    document.querySelectorAll('meta[content], [alt], [aria-label]').forEach(function (el) {
+      ['content', 'alt', 'aria-label'].forEach(function (attr) {
+        var v = el.getAttribute(attr);
+        if (v && v.indexOf(from) !== -1) el.setAttribute(attr, swap(v));
+      });
+    });
+    var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    var node;
+    while ((node = walker.nextNode())) {
+      var p = node.parentNode && node.parentNode.nodeName;
+      if (p === 'SCRIPT' || p === 'STYLE') continue;
+      if (node.nodeValue.indexOf(from) !== -1) node.nodeValue = swap(node.nodeValue);
+    }
+  })();
 
   /* ------------------------------------------------------------------
      Section switches
@@ -72,7 +100,7 @@
       var off = key ? !isOn(key) : !!hiddenIds[href.slice(1)];
       if (a.hasAttribute('data-fallback')) {
         if (!a.hasAttribute('data-href')) a.setAttribute('data-href', href);
-        a.setAttribute('href', off && email ? mailHref('Saath Chalo for our organisation') : a.getAttribute('data-href'));
+        a.setAttribute('href', off && email ? mailHref(brand.name + ' for our organisation') : a.getAttribute('data-href'));
         off = off && !email;
       }
       var item = a.closest('li') || a;
@@ -187,7 +215,7 @@
   }
 
   /* ------------------------------------------------------------------
-     Enquiry forms: sent to the Saath Chalo API (POST /site/enquiries),
+     Enquiry forms: sent to the API (POST /site/enquiries),
      where the admin panel reads them. If the API can't be reached the
      visitor is pointed at the support email instead.
      ------------------------------------------------------------------ */
